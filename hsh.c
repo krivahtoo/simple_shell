@@ -1,3 +1,4 @@
+#include "hsh.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +17,7 @@
 int main(int ac, char *av[], char *envp[])
 {
 	char *input = NULL;
+	char *bin = NULL;
 	size_t len = 0;
 	pid_t child_pid;
 	int i, status;
@@ -33,26 +35,32 @@ int main(int ac, char *av[], char *envp[])
 		i = getline(&input, &len, stdin);
 		if (i == EOF)
 		{
-			exit(EXIT_FAILURE);
+			break;
 		}
-		child_pid = fork();
-		if (child_pid == 0)
+		if (input != NULL)
 		{
-			if (input != NULL)
+			bin = which(strtok(input, "\n"));
+			if (bin != NULL)
 			{
-				/* TODO: use split to split arguments */
-				char *args[] = { NULL, NULL };
-
-				args[0] = strtok(input, "\n");
-				if (execve(args[0], args, envp) == -1)
+				child_pid = fork();
+				if (child_pid == 0)
 				{
-					exit(EXIT_FAILURE);
+					/* TODO: use split to split arguments */
+					char *args[] = { NULL, NULL };
+
+					args[0] = bin;
+					if (execve(args[0], args, envp) == -1)
+					{
+						perror("Executing command failed");
+						exit(EXIT_FAILURE);
+					}
+					break;
 				}
+				else if (wait(&status) == -1)
+					break;
 			}
-			break;
 		}
-		else if (wait(&status) == -1)
-			break;
 	} while (1);
-	return (0);
+
+	return (WEXITSTATUS(status));
 }
