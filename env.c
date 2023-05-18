@@ -2,8 +2,6 @@
 #include <unistd.h>
 #include <string.h>
 
-extern char **environ;
-
 /**
  * setenv - Implementation of the setenv function
  * @name: Name of entry
@@ -16,7 +14,7 @@ int setenv(const char *name, const char *value, int overwrite)
 {
 	char *env_value, *temp, *new_entry, **new_environ;
 	int i, num_entries = 0;
-	
+
 	for (i = 0; environ[i] != NULL; i++)
 	{
 		env_value = strdup(environ[i]);
