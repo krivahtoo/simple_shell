@@ -15,7 +15,7 @@ jobs:
       run: |
           git clone https://github.com/holbertonschool/Betty.git
           cd ./Betty
-          sudo install.sh
+          sudo ./install.sh
 
     - name: Run betty
       run: betty *.c *.h
