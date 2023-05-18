@@ -1,0 +1,21 @@
+name: Betty CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install Betty
+      run: |
+          git clone https://github.com/holbertonschool/Betty.git
+          cd ./Betty
+          sudo install.sh
+
+    - name: Run betty
+      run: betty *.c *.h
