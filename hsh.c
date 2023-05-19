@@ -30,8 +30,13 @@ int main(int ac, char *av[], char *envp[])
 		 * i.e. not executed with `echo "/bin/ls" | ./hsh`
 		 * don't show prompt when not connected
 		 */
-		printf("#cisfun$ ");
-		fflush(stdout);
+		if (isatty(fileno(stdin)))
+		{
+
+			printf("#cisfun$ ");
+			fflush(stdout);
+		}
+
 		i = getline(&input, &len, stdin);
 		if (i == EOF)
 		{
