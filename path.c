@@ -15,7 +15,7 @@
 char *which(const char *bin)
 {
 	char *path, *token, *filepath;
-	char **env = environ;
+	char **env = environ, *tmp;
 	struct stat buf;
 
 	/* Extracts the PATH variable in envp */
@@ -23,10 +23,12 @@ char *which(const char *bin)
 	{
 		if (strncmp(*env, "PATH", 4) == 0)
 		{
-			token = strtok(*env, "=");
+			tmp = strdup(*env); /* don't modify env variable */
+			token = strtok(tmp, "=");
 			if (token == NULL)
 				break;
 			path = strtok(NULL, "=");
+			break;
 		}
 		env++;
 	}
