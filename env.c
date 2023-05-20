@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "hsh.h"
 
 /**
  * setenv - Implementation of the setenv function
@@ -10,7 +11,7 @@
  * Return: 0, if successful
  */
 
-int setenv(const char *name, const char *value, int overwrite)
+int _setenv(const char *name, const char *value, int overwrite)
 {
 	char *env_value, *temp, *new_entry, **new_environ;
 	int i, num_entries = 0;
@@ -25,9 +26,9 @@ int setenv(const char *name, const char *value, int overwrite)
 			if (overwrite != 0)
 			{
 				new_entry = malloc(strlen(name) + strlen(value) + 2);
-				new_entry = strcpy(new_entry, name);
-				new_entry = strcpy(new_entry, "=");
-				new_entry = strcpy(new_entry, value);
+				new_entry = strcat(new_entry, name);
+				new_entry = strcat(new_entry, "=");
+				new_entry = strcat(new_entry, value);
 				environ[i] = new_entry;
 			}
 			free(env_value);
@@ -36,15 +37,15 @@ int setenv(const char *name, const char *value, int overwrite)
 	}
 
 		new_entry = malloc(strlen(name) + strlen(value) + 2);
-		new_entry = strcpy(new_entry, name);
-		new_entry = strcpy(new_entry, "=");
-		new_entry = strcpy(new_entry, value);
+		new_entry = strcat(new_entry, name);
+		new_entry = strcat(new_entry, "=");
+		new_entry = strcat(new_entry, value);
 
 			/* Find out how many entries are in environ */
 		while (environ[num_entries] != NULL)
 			num_entries++;
 
-		new_environ = realloc(environ, (num_entries + 2));
+		new_environ = (char **)realloc(environ, (num_entries + 2) * sizeof(char *));
 
 		if (new_environ == NULL)
 		{
@@ -58,4 +59,3 @@ int setenv(const char *name, const char *value, int overwrite)
 
 		return (0);
 }
-
