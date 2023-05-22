@@ -46,5 +46,6 @@ char *which(const char *bin)
 
 		path = NULL;
 	}
+	free(filepath);
 	return (NULL);
 }

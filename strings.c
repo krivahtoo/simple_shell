@@ -9,7 +9,7 @@
  * Return: the length of the string
  */
 
-int _strlen(char *str)
+int _strlen(const char *str)
 {
 	int len = 0;
 
@@ -49,35 +49,46 @@ char *_strcpy(char *dest, char *src)
  * Return: dest string
  */
 
-char *_strcat(char *dest, char *src)
+char *_strcat(const char *dest, const char *src)
 {
-	int i = 0, j = 0;
+	int dest_len = 0, src_len = 0, i, j;
+	char* final_str = NULL;
 
-	while (dest[i] != '\0')
+	while (dest[dest_len] != '\0')
 	{
-		i++;
+		dest_len++;
 	}
 
-	while (src[j] != '\0')
+	while (src[src_len] != '\0')
 	{
-		dest[i] = src[j];
-		i++;
-		j++;
+		src_len++;
 	}
-	dest[i] = '\0';
 
-	return (dest);
+	final_str = (char *)malloc((dest_len + src_len + 1) * sizeof(char));
+
+	if (final_str == NULL)
+		return (NULL);
+
+	for (i = 0; i < dest_len; i++)
+		final_str[i] = dest[i];
+
+	for (j = 0; j < src_len; j++)
+		final_str[i + j] = src[j];
+
+	final_str[i + j] = '\0';
+
+	return (final_str);
 }
 
 /**
- * strncmp - compares the first n bytes of s1 and s2
+ * _strncmp - compares the first n bytes of s1 and s2
  * @s1: First string
  * @s2: Second string
  * @n: number of bytes to be compared
  * Return: 0
  */
 
-int strncmp(const char *s1, const char *s2, size_t n)
+int _strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t i = 0;
 
