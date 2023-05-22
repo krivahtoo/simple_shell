@@ -28,7 +28,7 @@ char *which(const char *bin)
 	/* Extracts the PATH variable in envp */
 	while (*env)
 	{
-		if (strncmp(*env, "PATH", 4) == 0)
+		if (_strncmp(*env, "PATH", 4) == 0)
 		{
 			tmp = strdup(*env); /* don't modify env variable */
 			token = strtok(tmp, "=");
@@ -42,10 +42,10 @@ char *which(const char *bin)
 	/* Loop through dir paths in PATH */
 	while (*paths)
 	{
-		filepath = malloc(strlen(*paths) + strlen(bin) + 2);
-		filepath = strcat(filepath, *paths);
-		filepath = strcat(filepath, "/");
-		filepath = strcat(filepath, bin);
+		filepath = malloc(_strlen(*paths) + _strlen(bin) + 2);
+		filepath = _strcat(filepath, *paths);
+		filepath = _strcat(filepath, "/");
+		filepath = _strcat(filepath, bin);
 		if (stat(filepath, &buf) == 0)
 			return (filepath);
 
