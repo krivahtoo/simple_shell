@@ -18,6 +18,14 @@ char *which(const char *bin)
 	char **env = environ, *tmp;
 	struct stat buf;
 
+	if (bin[0] == '/' || bin[0] == '.')
+	{
+		if (stat(bin, &buf) == 0)
+			return (strdup(bin));
+		else
+			return (NULL);
+	}
+
 	/* Extracts the PATH variable in envp */
 	while (*env)
 	{

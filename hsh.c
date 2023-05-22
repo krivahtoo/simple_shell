@@ -16,32 +16,22 @@
  */
 int main(int ac, char *av[], char *envp[])
 {
-	char *input = NULL;
-	char *bin = NULL;
+	char *input = NULL, *bin = NULL;
 	size_t len = 0;
 	pid_t child_pid;
-	int i, status;
+	int status;
 
 	(void)ac;
 	(void)av;
 	do {
-		/**
-		 * TODO: check if it is connected to a terminal.
-		 * i.e. not executed with `echo "/bin/ls" | ./hsh`
-		 * don't show prompt when not connected
-		 */
 		if (isatty(fileno(stdin)))
 		{
-
 			printf("#cisfun$ ");
 			fflush(stdout);
 		}
 
-		i = getline(&input, &len, stdin);
-		if (i == EOF)
-		{
+		if (getline(&input, &len, stdin) == EOF)
 			break;
-		}
 		if (input != NULL)
 		{
 			bin = which(strtok(input, "\n"));
@@ -55,17 +45,12 @@ int main(int ac, char *av[], char *envp[])
 
 					args[0] = bin;
 					if (execve(args[0], args, envp) == -1)
-					{
-						perror("Executing command failed");
 						exit(EXIT_FAILURE);
-					}
-					break;
 				}
 				else if (wait(&status) == -1)
 					break;
 			}
 		}
 	} while (1);
-
 	return (WEXITSTATUS(status));
 }

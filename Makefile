@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Werror -Wextra -pedantic -std=gnu89
+CFLAGS=-Wall -Werror -Wextra -pedantic -std=gnu89 -ggdb
 DEPS=hsh.h
 OBJ=hsh.o path.o
 
