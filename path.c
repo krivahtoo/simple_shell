@@ -15,7 +15,7 @@
 char *which(const char *bin)
 {
 	char *path, *token, *filepath;
-	char **env = environ, *tmp;
+	char **env = environ, *tmp, **paths;
 	struct stat buf;
 
 	if (bin[0] == '/' || bin[0] == '.')
@@ -25,7 +25,6 @@ char *which(const char *bin)
 		else
 			return (NULL);
 	}
-
 	/* Extracts the PATH variable in envp */
 	while (*env)
 	{
@@ -35,26 +34,24 @@ char *which(const char *bin)
 			token = strtok(tmp, "=");
 			if (token == NULL)
 				break;
-			path = strtok(NULL, "=");
+			paths = split(strtok(NULL, "="), ":");
 			break;
 		}
 		env++;
 	}
-
 	/* Loop through dir paths in PATH */
-	while (1)
+	while (*paths)
 	{
-		token = strtok(path, ":");
-		if (token == NULL)
-			break;
-		filepath = malloc(strlen(token) + strlen(bin) + 2);
-		filepath = strcat(filepath, token);
+		filepath = malloc(strlen(*paths) + strlen(bin) + 2);
+		filepath = strcat(filepath, *paths);
 		filepath = strcat(filepath, "/");
 		filepath = strcat(filepath, bin);
 		if (stat(filepath, &buf) == 0)
 			return (filepath);
 
-		path = NULL;
+		free(filepath);
+		paths++;
 	}
+	free(paths);
 	return (NULL);
 }

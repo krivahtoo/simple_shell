@@ -22,7 +22,6 @@ int main(int ac, char *av[], char *envp[])
 	int status;
 
 	(void)ac;
-	(void)av;
 	do {
 		if (isatty(fileno(stdin)))
 		{
@@ -34,22 +33,23 @@ int main(int ac, char *av[], char *envp[])
 			break;
 		if (input != NULL)
 		{
-			bin = which(strtok(input, "\n"));
+			char **args = NULL;
+
+			args = split(strtok(input, "\n"), " ");
+			bin = which(*args);
 			if (bin != NULL)
 			{
 				child_pid = fork();
 				if (child_pid == 0)
 				{
-					/* TODO: use split to split arguments */
-					char *args[] = { NULL, NULL };
-
-					args[0] = bin;
-					if (execve(args[0], args, envp) == -1)
+					if (execve(bin, args, envp) == -1)
 						exit(EXIT_FAILURE);
 				}
 				else if (wait(&status) == -1)
 					break;
 			}
+			else
+				print_err(av[0], input, 1);
 		}
 	} while (1);
 	return (WEXITSTATUS(status));
