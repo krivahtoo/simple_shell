@@ -5,6 +5,30 @@
 #include <stdlib.h>
 
 /**
+ * _putchar - print character to screen
+ *
+ * @ch: character to print
+ *
+ * Return: 1 on success.
+ */
+int _putchar(char ch)
+{
+	return (write(STDERR_FILENO, &ch, 1));
+}
+
+/**
+ * _puts - prints a string.
+ *
+ * @str: string to print
+ *
+ * Return: 1 on success.
+ */
+int _puts(char *str)
+{
+	return (write(STDERR_FILENO, str, _strlen(str)));
+}
+
+/**
  * print_err - print "command not found" error
  *
  * @name: name of our shell ass passed in argv[0]
@@ -13,16 +37,20 @@
  */
 void print_err(char *name, char *program, int line)
 {
-	const char *err_str = ": command not found\n";
+	char *err_str = ": command not found\n";
 
 	(void)line;
-	write(STDERR_FILENO, name, strlen(name));
+	_puts(name);
 	if (isatty(fileno(stdin)))
-		write(STDERR_FILENO, ": ", strlen(": "));
+		_puts(": ");
 	else
-		write(STDERR_FILENO, ": line 1: ", strlen(": line 1: "));
-	write(STDERR_FILENO, program, strlen(program));
-	write(STDERR_FILENO, err_str, strlen(err_str));
+	{
+		_puts(": line ");
+		_putchar('0' + line);
+		_puts(": ");
+	}
+	_puts(program);
+	_puts(err_str);
 	fflush(stderr);
 	if (isatty(fileno(stdin)) == 0)
 		exit(127);
@@ -43,6 +71,9 @@ char **split(char *str, char *delim)
 	char *token;
 	int i = 0;
 
+	if (str == NULL)
+		return (arr);
+
 	/* Loop through the string */
 	while (1)
 	{
@@ -54,8 +85,8 @@ char **split(char *str, char *delim)
 
 		str = NULL;
 		i++;
+		arr[i] = NULL;
 	}
-	arr[i] = NULL;
 
 	return (arr);
 }

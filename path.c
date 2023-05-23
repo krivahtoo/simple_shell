@@ -32,11 +32,11 @@ char **extract_path(void)
 }
 
 /**
- * free_paths - free paths from PATH
+ * free_array - free paths from PATH
  *
  * @paths: NULL terminated array of paths
  */
-void free_paths(char **paths)
+void free_array(char **paths)
 {
 	int i = 0;
 
@@ -86,7 +86,7 @@ char *which(const char *bin)
 		filepath = NULL;
 		paths++;
 	}
-	free_paths(p);
+	free_array(p);
 
 	return (NULL);
 }

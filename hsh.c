@@ -4,6 +4,22 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <signal.h>
+
+/**
+ * handler - handle system signals
+ *
+ * @no: signal number
+ */
+void handler(int no)
+{
+	(void)no;
+	if (isatty(fileno(stdin)))
+	{
+		_puts("\n#cisfun$ ");
+		fflush(stdout);
+	}
+}
 
 /**
  * main - entry point for simple shell
@@ -19,37 +35,40 @@ int main(int ac, char *av[], char *envp[])
 	char *input = NULL, *bin = NULL;
 	size_t len = 0;
 	pid_t child_pid;
-	int status;
+	int status, line = 0;
 
 	(void)ac;
+	signal(SIGINT, &handler);
 	do {
-		if (isatty(fileno(stdin)))
+		if (prompt(&input, &len) == EOF)
 		{
-			printf("#cisfun$ ");
-			fflush(stdout);
-		}
-
-		if (getline(&input, &len, stdin) == EOF)
+			_puts("\nexit\n");
 			break;
+		}
 		if (input != NULL)
 		{
 			char **args = NULL;
 
+			line++;
 			args = split(strtok(input, "\n"), " ");
-			bin = which(*args);
-			if (bin != NULL)
+			if (exec_builtin(args) == -1 && args != NULL)
 			{
-				child_pid = fork();
-				if (child_pid == 0)
+				bin = which(*args);
+				if (bin != NULL)
 				{
-					if (execve(bin, args, envp) == -1)
-						exit(EXIT_FAILURE);
+					child_pid = fork();
+					if (child_pid == 0)
+					{
+						if (execve(bin, args, envp) == -1)
+							exit(EXIT_FAILURE);
+					}
+					else if (wait(&status) == -1)
+						break;
 				}
-				else if (wait(&status) == -1)
-					break;
+				else
+					print_err(av[0], input, line);
 			}
-			else
-				print_err(av[0], input, 1);
+			free_array(args);
 		}
 	} while (1);
 	return (WEXITSTATUS(status));
