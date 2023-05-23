@@ -6,26 +6,15 @@
 #include <unistd.h>
 
 /**
- * which - returns path to a binary or NULL
+ * extract_path - extract directories from PATH variable.
  *
- * @bin: binary name
- *
- * Return: full path, NULL when not found
+ * Return: NULL turminated array
  */
-char *which(const char *bin)
+char **extract_path(void)
 {
-	char *path, *token, *filepath;
-	char **env = environ, *tmp, **paths;
-	struct stat buf;
-
-	if (bin[0] == '/' || bin[0] == '.')
-	{
-		if (stat(bin, &buf) == 0)
-			return (strdup(bin));
-		else
-			return (NULL);
-	}
-	/* Extracts the PATH variable in envp */
+	char **env = environ, *tmp, *token;
+	char **paths = { NULL };
+	/* Extracts the PATH variable in environ */
 	while (*env)
 	{
 		if (_strncmp(*env, "PATH", 4) == 0)
@@ -39,19 +28,65 @@ char *which(const char *bin)
 		}
 		env++;
 	}
+	return (paths);
+}
+
+/**
+ * free_paths - free paths from PATH
+ *
+ * @paths: NULL terminated array of paths
+ */
+void free_paths(char **paths)
+{
+	int i = 0;
+
+	if (paths)
+	{
+		while (paths[i])
+			free(paths[i++]);
+		free(paths);
+	}
+}
+
+/**
+ * which - returns path to a binary or NULL
+ *
+ * @bin: binary name
+ *
+ * Return: full path, NULL when not found
+ */
+char *which(const char *bin)
+{
+	char *filepath = NULL;
+	char **paths, **p;
+	struct stat buf;
+
+	if (*bin == '/' || *bin == '.')
+	{
+		if (stat(bin, &buf) == 0)
+			return (strdup(bin));
+		else
+			return (NULL);
+	}
+
+	paths = extract_path();
+	p = paths; /* for free */
+
 	/* Loop through dir paths in PATH */
 	while (*paths)
 	{
 		filepath = malloc(_strlen(*paths) + _strlen(bin) + 2);
-		filepath = _strcat(filepath, *paths);
+		filepath = _strcpy(filepath, *paths);
 		filepath = _strcat(filepath, "/");
 		filepath = _strcat(filepath, bin);
 		if (stat(filepath, &buf) == 0)
 			return (filepath);
 
 		free(filepath);
+		filepath = NULL;
 		paths++;
 	}
-	free(paths);
+	free_paths(p);
+
 	return (NULL);
 }
