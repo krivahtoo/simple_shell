@@ -24,7 +24,7 @@ int _putchar(char ch)
  */
 int _puts(char *str)
 {
-	return (write(STDERR_FILENO, str, _strlen(str)));
+	return (write(STDOUT_FILENO, str, _strlen(str)));
 }
 
 /**
