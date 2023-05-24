@@ -48,35 +48,24 @@ char *_strcpy(char *dest, char *src)
  * Return: dest string
  */
 
-char *_strcat(const char *dest, const char *src)
+char *_strcat(char *dest, const char *src)
 {
-	int dest_len = 0, src_len = 0, i, j;
-	char *final_str = NULL;
+	int dest_len = 0, src_idx = 0;
 
 	while (dest[dest_len] != '\0')
 	{
 		dest_len++;
 	}
 
-	while (src[src_len] != '\0')
+	while (src[src_idx] != '\0')
 	{
-		src_len++;
+		dest[dest_len + src_idx] = src[src_idx];
+		src_idx++;
 	}
 
-	final_str = (char *)malloc((dest_len + src_len + 1) * sizeof(char));
+	dest[dest_len + src_idx] = '\0';
 
-	if (final_str == NULL)
-		return (NULL);
-
-	for (i = 0; i < dest_len; i++)
-		final_str[i] = dest[i];
-
-	for (j = 0; j < src_len; j++)
-		final_str[i + j] = src[j];
-
-	final_str[i + j] = '\0';
-
-	return (final_str);
+	return (dest);
 }
 
 /**
