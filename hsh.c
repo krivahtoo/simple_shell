@@ -40,7 +40,10 @@ int main(int ac, char *av[])
 	do {
 		if (prompt(&input, &len) == EOF)
 		{
-			_puts("\nexit\n");
+			if (isatty(fileno(stdin)))
+			{
+				_puts("\nexit\n");
+			}
 			break;
 		}
 		if (input != NULL)

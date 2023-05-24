@@ -1,5 +1,6 @@
 #include "hsh.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 /**
  * print_env - print enviroment variables
@@ -33,7 +34,8 @@ int exec_builtin(char **args)
 	cmd = *args;
 	if (_strncmp(cmd, "exit", 4) == 0)
 	{
-		_puts("exit\n");
+		if (isatty(fileno(stdin)))
+			_puts("exit\n");
 		exit(0);
 	}
 	else if (_strncmp(cmd, "env", 3) == 0)

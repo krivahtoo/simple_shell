@@ -1,4 +1,5 @@
 #include "hsh.h"
+#include <stddef.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -18,6 +19,7 @@ char **split(char *str, char *delim)
 	char **arr = { NULL };
 	char *token;
 	int i = 0;
+	size_t len;
 
 	if (str == NULL)
 		return (arr);
@@ -28,7 +30,11 @@ char **split(char *str, char *delim)
 		token = strtok(str, delim);
 		if (token == NULL)
 			break;
-		arr = realloc(arr, sizeof(char *) * (i + 2));
+		if (i == 0)
+			len = 0;
+		else
+			len = sizeof(char *) * (i + 1);
+		arr = _realloc(arr, len, sizeof(char *) * (i + 2));
 		arr[i] = _strdup(token);
 
 		str = NULL;

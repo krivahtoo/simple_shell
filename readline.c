@@ -34,7 +34,7 @@ ssize_t _getline(char **str, size_t *len, FILE *stream)
 		count += i;
 		*(*str + (*len)) = ch;
 		*len += 1;
-		*str = realloc(*str, (*len) + 1);
+		*str = _realloc(*str, *len, (*len) + 1);
 		if (*str == NULL)
 			return (-1);
 		i = read(fd, &ch, sizeof(ch));
