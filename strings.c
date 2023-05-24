@@ -1,5 +1,4 @@
 #include "hsh.h"
-#include <stddef.h>
 
 /**
  * _strlen - Function to get the length of a string
@@ -52,7 +51,7 @@ char *_strcpy(char *dest, char *src)
 char *_strcat(const char *dest, const char *src)
 {
 	int dest_len = 0, src_len = 0, i, j;
-	char* final_str = NULL;
+	char *final_str = NULL;
 
 	while (dest[dest_len] != '\0')
 	{
@@ -105,4 +104,41 @@ int _strncmp(const char *s1, const char *s2, size_t n)
 		}
 
 		return (0);
+}
+
+/**
+ * _strdup - Function to duplicate string
+ * @str: String to be duplicated
+ *
+ * Return: NULL if str is NULL, NULL if insufficient memory
+ * Pointer to str duplicate
+ */
+
+char *_strdup(const char *str)
+{
+	int i, len = 0;
+	char *s;
+
+	if (str == NULL)
+	{
+		return (NULL);
+	}
+
+	while (str[len] != '\0')
+	{
+		len++;
+	}
+
+	s = malloc(sizeof(*s) * (len + 1));
+	if (s == NULL)
+	{
+		return (NULL);
+	}
+
+	for (i = 0; i < len; i++)
+	{
+		s[i] = str[i];
+	}
+	s[len] = '\0';
+	return (s);
 }

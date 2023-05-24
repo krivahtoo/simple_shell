@@ -19,7 +19,7 @@ char **extract_path(void)
 	{
 		if (_strncmp(*env, "PATH", 4) == 0)
 		{
-			tmp = strdup(*env); /* don't modify env variable */
+			tmp = _strdup(*env); /* don't modify env variable */
 			token = strtok(tmp, "=");
 			if (token == NULL)
 				break;
@@ -64,7 +64,7 @@ char *which(const char *bin)
 	if (*bin == '/' || *bin == '.')
 	{
 		if (stat(bin, &buf) == 0)
-			return (strdup(bin));
+			return (_strdup(bin));
 		else
 			return (NULL);
 	}

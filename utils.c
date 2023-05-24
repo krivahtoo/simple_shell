@@ -81,7 +81,7 @@ char **split(char *str, char *delim)
 		if (token == NULL)
 			break;
 		arr = realloc(arr, sizeof(char *) * (i + 2));
-		arr[i] = strdup(token);
+		arr[i] = _strdup(token);
 
 		str = NULL;
 		i++;
