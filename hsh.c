@@ -56,7 +56,7 @@ int main(int ac, char *av[])
 			{
 				i = execute(args, &status);
 				if (i == 1)
-					print_err(av[0], input, line);
+					perror(av[0]);
 				else if (i == -1)
 					break;
 			}

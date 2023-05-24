@@ -24,6 +24,7 @@ char **extract_path(void)
 			if (token == NULL)
 				break;
 			paths = split(strtok(NULL, "="), ":");
+			free(tmp);
 			break;
 		}
 		env++;
