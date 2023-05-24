@@ -27,7 +27,10 @@ int execute(char **args, int *status)
 				exit(EXIT_FAILURE);
 		}
 		else if (wait(status) == -1)
+		{
+			free(bin);
 			return (1);
+		}
 	}
 	else
 		return (1);

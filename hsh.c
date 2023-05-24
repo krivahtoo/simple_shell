@@ -33,7 +33,7 @@ int main(int ac, char *av[])
 {
 	char *input = NULL;
 	size_t len = 0;
-	int status, line = 0, i = 0;
+	int status, line_no = 0, i = 0;
 
 	(void)ac;
 	signal(SIGINT, &handler);
@@ -42,16 +42,17 @@ int main(int ac, char *av[])
 		{
 			if (isatty(fileno(stdin)))
 			{
-				_puts("\nexit\n");
+				_puts("\n");
 			}
 			break;
 		}
 		if (input != NULL)
 		{
 			char **args = NULL;
+			char *line = input;
 
-			line++;
-			args = split(strtok(input, "\n"), " ");
+			line_no++;
+			args = split(strtok(line, "\n"), " ");
 			if (exec_builtin(args) == -1 && args != NULL)
 			{
 				i = execute(args, &status);
@@ -61,10 +62,10 @@ int main(int ac, char *av[])
 					break;
 			}
 			free_array(args);
-			free(input);
-			input = NULL;
-			len = 0;
 		}
+		free(input);
+		len = 0;
+		input = NULL;
 	} while (1);
 	return (WEXITSTATUS(status));
 }

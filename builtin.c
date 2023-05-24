@@ -34,8 +34,7 @@ int exec_builtin(char **args)
 	cmd = *args;
 	if (_strncmp(cmd, "exit", 4) == 0)
 	{
-		if (isatty(fileno(stdin)))
-			_puts("exit\n");
+		free_array(args);
 		exit(0);
 	}
 	else if (_strncmp(cmd, "env", 3) == 0)
