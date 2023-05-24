@@ -14,6 +14,7 @@ int prompt(char **input, size_t *len);
 void free_array(char **paths);
 int exec_builtin(char **args);
 ssize_t _getline(char **str, size_t *len, FILE *stream);
+int execute(char **args, int *status);
 
 int _puts(char *str);
 int _putchar(char ch);

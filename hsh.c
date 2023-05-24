@@ -26,16 +26,14 @@ void handler(int no)
  *
  * @ac: argument count
  * @av: arguments array
- * @envp: environment values
  *
  * Return: 0 on success, non-zero on failure
  */
-int main(int ac, char *av[], char *envp[])
+int main(int ac, char *av[])
 {
-	char *input = NULL, *bin = NULL;
+	char *input = NULL;
 	size_t len = 0;
-	pid_t child_pid;
-	int status, line = 0;
+	int status, line = 0, i = 0;
 
 	(void)ac;
 	signal(SIGINT, &handler);
@@ -53,22 +51,16 @@ int main(int ac, char *av[], char *envp[])
 			args = split(strtok(input, "\n"), " ");
 			if (exec_builtin(args) == -1 && args != NULL)
 			{
-				bin = which(*args);
-				if (bin != NULL)
-				{
-					child_pid = fork();
-					if (child_pid == 0)
-					{
-						if (execve(bin, args, envp) == -1)
-							exit(EXIT_FAILURE);
-					}
-					else if (wait(&status) == -1)
-						break;
-				}
-				else
+				i = execute(args, &status);
+				if (i == 1)
 					print_err(av[0], input, line);
+				else if (i == -1)
+					break;
 			}
 			free_array(args);
+			free(input);
+			input = NULL;
+			len = 0;
 		}
 	} while (1);
 	return (WEXITSTATUS(status));

@@ -20,7 +20,7 @@ int prompt(char **input, size_t *len)
 		fflush(stdout);
 	}
 
-	if (_getline(input, len, stdin) == EOF)
+	if (getline(input, len, stdin) == EOF)
 		return (EOF);
 	return (0);
 }
