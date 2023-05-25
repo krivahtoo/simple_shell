@@ -21,6 +21,9 @@ int prompt(char **input, size_t *len)
 	}
 
 	if (getline(input, len, stdin) == EOF)
+	{
 		return (EOF);
+		free(input);
+	}
 	return (0);
 }
