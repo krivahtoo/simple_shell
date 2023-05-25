@@ -21,6 +21,7 @@ void print_env(void)
  * exec_builtin - execute a built in command
  *
  * @args: arguments passed by the user
+ * @exit: exit integer variable
  *
  * Return: 0 on success, -1 failure
  */

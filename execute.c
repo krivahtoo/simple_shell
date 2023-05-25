@@ -43,7 +43,7 @@ int execute(char **args, int *status)
 				return (-1);
 			}
 		}
- 
+
 	free(bin);
 	return (0);
 }
