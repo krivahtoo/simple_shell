@@ -58,7 +58,7 @@ void free_array(char **paths)
  */
 char *which(const char *bin)
 {
-	char *filepath = NULL;
+	char *filepath;
 	char **paths, **p;
 	struct stat buf;
 

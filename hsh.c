@@ -56,7 +56,7 @@ int main(int ac, char *av[])
 			if (exec_builtin(args) == -1 && args != NULL)
 			{
 				i = execute(args, &status);
-				if (i == 1)
+				if (i == 1 || i == -2)
 					perror(av[0]);
 				else if (i == -1)
 					break;
