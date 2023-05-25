@@ -18,22 +18,32 @@ int execute(char **args, int *status)
 	char **env = environ;
 
 	bin = which(*args);
-	if (bin != NULL)
+	if (bin == NULL)
 	{
+		free(bin);
+		return (-2);
+	}
+
 		child_pid = fork();
-		if (child_pid == 0)
-		{
-			if (execve(bin, args, env) == -1)
-				exit(EXIT_FAILURE);
-		}
-		else if (wait(status) == -1)
+		if (child_pid == -1)
 		{
 			free(bin);
-			return (1);
+			return (-1);
 		}
-	}
-	else
-		return (1);
+		else if (child_pid == 0)
+		{
+			if (execve(bin, args, env) == -1)
+				_exit(EXIT_FAILURE);
+		}
+		else
+		{
+			if (wait(status) == -1)
+			{
+				free(bin);
+				return (-1);
+			}
+		}
+
 	free(bin);
 	return (0);
 }
