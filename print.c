@@ -12,7 +12,7 @@
  */
 int _putchar(char ch)
 {
-	return (write(STDERR_FILENO, &ch, 1));
+	return (write(STDOUT_FILENO, &ch, 1));
 }
 
 /**
