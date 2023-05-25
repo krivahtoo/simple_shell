@@ -24,7 +24,7 @@ void print_env(void)
  *
  * Return: 0 on success, -1 failure
  */
-int exec_builtin(char **args)
+int exec_builtin(char **args, int *exit)
 {
 	char *cmd = NULL;
 
@@ -34,8 +34,7 @@ int exec_builtin(char **args)
 	cmd = *args;
 	if (_strncmp(cmd, "exit", 4) == 0)
 	{
-		free_array(args);
-		exit(0);
+		*exit = 1;
 	}
 	else if (_strncmp(cmd, "env", 3) == 0)
 		print_env();

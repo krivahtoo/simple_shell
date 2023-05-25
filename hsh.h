@@ -12,7 +12,7 @@ char *which(const char *bin);
 void print_err(char *name, char *program, int line);
 int prompt(char **input, size_t *len);
 void free_array(char **paths);
-int exec_builtin(char **args);
+int exec_builtin(char **args, int *exit);
 ssize_t _getline(char **str, size_t *len, FILE *stream);
 int execute(char **args, int *status);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);

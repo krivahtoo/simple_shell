@@ -81,7 +81,10 @@ char *which(const char *bin)
 		filepath = _strcat(filepath, "/");
 		filepath = _strcat(filepath, bin);
 		if (stat(filepath, &buf) == 0)
+		{
+			free_array(p);
 			return (filepath);
+		}
 
 		free(filepath);
 		filepath = NULL;

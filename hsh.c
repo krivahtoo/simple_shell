@@ -33,7 +33,7 @@ int main(int ac, char *av[])
 {
 	char *input = NULL;
 	size_t len = 0;
-	int status, line_no = 0, i = 0;
+	int status, line_no = 0, i = 0, exit = 0;
 
 	(void)ac;
 	signal(SIGINT, &handler);
@@ -41,31 +41,29 @@ int main(int ac, char *av[])
 		if (prompt(&input, &len) == EOF)
 		{
 			if (isatty(fileno(stdin)))
-			{
 				_puts("\n");
-			}
-			break;
+			exit = 1;
 		}
-		if (input != NULL)
+		else if (input != NULL)
 		{
 			char **args = NULL;
 			char *line = input;
 
 			line_no++;
 			args = split(strtok(line, "\n"), " ");
-			if (exec_builtin(args) == -1 && args != NULL)
+			if (exec_builtin(args, &exit) == -1 && args != NULL)
 			{
 				i = execute(args, &status);
 				if (i == 1 || i == -2)
 					perror(av[0]);
 				else if (i == -1)
-					break;
+					exit = 1;
 			}
 			free_array(args);
 		}
 		free(input);
 		len = 0;
 		input = NULL;
-	} while (1);
+	} while (!exit);
 	return (WEXITSTATUS(status));
 }
