@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-Wall -Werror -Wextra -pedantic -std=gnu89
+CFLAGS=-Wall -Werror -Wextra -pedantic -std=gnu89 -ggdb
 DEPS=hsh.h
-OBJ=hsh.o path.o
+OBJ=hsh.o path.o utils.o strings.o prompt.o builtin.o readline.o execute.o print.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)

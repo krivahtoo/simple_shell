@@ -6,6 +6,50 @@
 #include <unistd.h>
 
 /**
+ * extract_path - extract directories from PATH variable.
+ *
+ * Return: NULL turminated array
+ */
+char **extract_path(void)
+{
+	char **env = environ, *tmp, *token;
+	char **paths = { NULL };
+	/* Extracts the PATH variable in environ */
+	while (*env)
+	{
+		if (_strncmp(*env, "PATH", 4) == 0)
+		{
+			tmp = _strdup(*env); /* don't modify env variable */
+			token = strtok(tmp, "=");
+			if (token == NULL)
+				break;
+			paths = split(strtok(NULL, "="), ":");
+			free(tmp);
+			break;
+		}
+		env++;
+	}
+	return (paths);
+}
+
+/**
+ * free_array - free paths from PATH
+ *
+ * @paths: NULL terminated array of paths
+ */
+void free_array(char **paths)
+{
+	int i = 0;
+
+	if (paths)
+	{
+		while (paths[i])
+			free(paths[i++]);
+		free(paths);
+	}
+}
+
+/**
  * which - returns path to a binary or NULL
  *
  * @bin: binary name
@@ -14,37 +58,39 @@
  */
 char *which(const char *bin)
 {
-	char *path, *token, *filepath;
-	char **env = environ;
+	char *filepath;
+	char **paths, **p;
 	struct stat buf;
 
-	/* Extracts the PATH variable in envp */
-	while (*env)
+	if (*bin == '/' || *bin == '.')
 	{
-		if (strncmp(*env, "PATH", 4) == 0)
-		{
-			token = strtok(*env, "=");
-			if (token == NULL)
-				break;
-			path = strtok(NULL, "=");
-		}
-		env++;
+		if (stat(bin, &buf) == 0)
+			return (_strdup(bin));
+		else
+			return (NULL);
 	}
+
+	paths = extract_path();
+	p = paths; /* for free */
 
 	/* Loop through dir paths in PATH */
-	while (1)
+	while (*paths)
 	{
-		token = strtok(path, ":");
-		if (token == NULL)
-			break;
-		filepath = malloc(strlen(token) + strlen(bin) + 2);
-		filepath = strcat(filepath, token);
-		filepath = strcat(filepath, "/");
-		filepath = strcat(filepath, bin);
+		filepath = malloc(_strlen(*paths) + _strlen(bin) + 2);
+		filepath = _strcpy(filepath, *paths);
+		filepath = _strcat(filepath, "/");
+		filepath = _strcat(filepath, bin);
 		if (stat(filepath, &buf) == 0)
+		{
+			free_array(p);
 			return (filepath);
+		}
 
-		path = NULL;
+		free(filepath);
+		filepath = NULL;
+		paths++;
 	}
+	free_array(p);
+
 	return (NULL);
 }

@@ -4,63 +4,66 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <signal.h>
+
+/**
+ * handler - handle system signals
+ *
+ * @no: signal number
+ */
+void handler(int no)
+{
+	(void)no;
+	if (isatty(fileno(stdin)))
+	{
+		_puts("\n#cisfun$ ");
+		fflush(stdout);
+	}
+}
 
 /**
  * main - entry point for simple shell
  *
  * @ac: argument count
  * @av: arguments array
- * @envp: environment values
  *
  * Return: 0 on success, non-zero on failure
  */
-int main(int ac, char *av[], char *envp[])
+int main(int ac, char *av[])
 {
 	char *input = NULL;
-	char *bin = NULL;
 	size_t len = 0;
-	pid_t child_pid;
-	int i, status;
+	int status, line_no = 0, i = 0, exit = 0;
 
 	(void)ac;
-	(void)av;
+	signal(SIGINT, &handler);
 	do {
-		/**
-		 * TODO: check if it is connected to a terminal.
-		 * i.e. not executed with `echo "/bin/ls" | ./hsh`
-		 * don't show prompt when not connected
-		 */
-		printf("#cisfun$ ");
-		fflush(stdout);
-		i = getline(&input, &len, stdin);
-		if (i == EOF)
+		if (prompt(&input, &len) == EOF)
 		{
-			break;
+			if (isatty(fileno(stdin)))
+				_puts("\n");
+			exit = 1;
 		}
-		if (input != NULL)
+		else if (input != NULL)
 		{
-			bin = which(strtok(input, "\n"));
-			if (bin != NULL)
+			char **args = NULL;
+			char *line = input;
+
+			line_no++;
+			args = split(strtok(line, "\n"), " ");
+			if (exec_builtin(args, &exit) == -1 && args != NULL)
 			{
-				child_pid = fork();
-				if (child_pid == 0)
-				{
-					/* TODO: use split to split arguments */
-					char *args[] = { NULL, NULL };
-
-					args[0] = bin;
-					if (execve(args[0], args, envp) == -1)
-					{
-						perror("Executing command failed");
-						exit(EXIT_FAILURE);
-					}
-					break;
-				}
-				else if (wait(&status) == -1)
-					break;
+				i = execute(args, &status);
+				if (i == 1 || i == -2)
+					perror(av[0]);
+				else if (i == -1)
+					exit = 1;
 			}
+			free_array(args);
 		}
-	} while (1);
-
+		free(input);
+		len = 0;
+		input = NULL;
+	} while (!exit);
 	return (WEXITSTATUS(status));
 }
