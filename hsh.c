@@ -51,6 +51,7 @@ int main(int ac, char *av[])
 
 			line_no++;
 			args = split(strtok(line, "\n"), " ");
+			args = parse_args(args, status);
 			if (exec_builtin(args, &exit) == -1 && args != NULL)
 			{
 				i = execute(args, &status);
