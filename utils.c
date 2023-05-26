@@ -79,3 +79,33 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 	}
 	return (p);
 }
+
+/**
+ * to_string - convert integer to string
+ * @n: number to convert
+ *
+ * Return: malloced string pointer or NULL if n < 0
+ */
+char *to_string(int n)
+{
+	char *str = NULL, ch;
+	int len = 0, i = 0;
+
+	str = malloc(sizeof(char));
+	/* using do..while loop to make sure 0 is returned */
+	do {
+		str = _realloc(str, sizeof(char) * (len + 1), sizeof(char) * (len + 2));
+		str[len] = '0' + n % 10;
+		n /= 10;
+		len++;
+	} while (n > 0);
+	str[len] = '\0';
+
+	for (i = 0; i < len / 2; i++)
+	{
+		ch = str[i];
+		str[i] = str[len - i - 1];
+		str[len - i - 1] = ch;
+	}
+	return (str);
+}
