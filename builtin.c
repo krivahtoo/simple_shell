@@ -28,6 +28,7 @@ void print_env(void)
 int exec_builtin(char **args, int *exit)
 {
 	char *cmd = NULL;
+	char *name = NULL, *value = NULL;
 
 	if (args == NULL)
 		return (-1);
@@ -39,6 +40,13 @@ int exec_builtin(char **args, int *exit)
 	}
 	else if (_strncmp(cmd, "env", 3) == 0)
 		print_env();
+
+	else if (_strncmp(cmd, "setenv", 6) == 0)
+	{
+		name = args[1];
+		value = args[2];
+		_setenv(name, value, 1);
+	}
 	else
 		return (-1);
 	return (0);
