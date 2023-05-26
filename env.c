@@ -4,7 +4,7 @@
 #include "hsh.h"
 
 /**
- * setenv - Implementation of the setenv function
+ * _setenv - Implementation of the setenv function
  * @name: Name of entry
  * @value: Value associated with entry
  * @overwrite: condition for overwriting value of entry
@@ -20,7 +20,6 @@ int _setenv(const char *name, const char *value, int overwrite)
 	{
 		env_value = strdup(environ[i]);
 		temp = strtok(env_value, "=");
-
 		if (strcmp(temp, name) == 0)
 		{
 			if (overwrite != 0)
@@ -36,26 +35,51 @@ int _setenv(const char *name, const char *value, int overwrite)
 		}
 	}
 
-		new_entry = malloc(strlen(name) + strlen(value) + 2);
-		new_entry = strcat(new_entry, name);
-		new_entry = strcat(new_entry, "=");
-		new_entry = strcat(new_entry, value);
+	new_entry = malloc(strlen(name) + strlen(value) + 2);
+	new_entry = strcat(new_entry, name);
+	new_entry = strcat(new_entry, "=");
+	new_entry = strcat(new_entry, value);
+	/* Find out how many entries are in environ */
+	while (environ[num_entries] != NULL)
+		num_entries++;
+	new_environ = (char **)realloc(environ, (num_entries + 2) * sizeof(char *));
+	if (new_environ == NULL)
+	{
+		free(new_entry);
+		return (-1);
+	}
+	new_environ[num_entries] = new_entry;
+	new_environ[num_entries + 1] = NULL;
+	environ = new_environ;
+	return (0);
+}
 
-			/* Find out how many entries are in environ */
-		while (environ[num_entries] != NULL)
-			num_entries++;
-
-		new_environ = (char **)realloc(environ, (num_entries + 2) * sizeof(char *));
-
-		if (new_environ == NULL)
+/**
+ * _getenv - get env variable
+ *
+ * @name: variable name
+ *
+ * Return: pointer to string, or NULL
+ */
+char *_getenv(const char *name)
+{
+	char **env = environ;
+	char *ptr = NULL;
+	/* Extracts the PATH variable in environ */
+	while (*env)
+	{
+		if (strncmp(*env, name, 4) == 0)
 		{
-			free(new_entry);
-			return (-1);
+			ptr = *env;
+			while (*ptr != '=' && *ptr != '\0')
+				ptr++;
+			if (*ptr == '=')
+				ptr++;
+			else
+				ptr = NULL;
+			break;
 		}
-
-		new_environ[num_entries] = new_entry;
-		new_environ[num_entries + 1] = NULL;
-		environ = new_environ;
-
-		return (0);
+		env++;
+	}
+	return (ptr);
 }

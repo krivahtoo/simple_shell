@@ -9,6 +9,8 @@ int main(void)
 	int overwrite = 1;
 	int return_set;
 
+	printf("%s\n", _getenv("HOME"));
+
 	return_set = _setenv(name, value, overwrite);
 
 	if (return_set == -1)
