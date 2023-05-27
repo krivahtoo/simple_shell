@@ -24,8 +24,6 @@ char *create_entry(const char *name, const char *value)
 	_strcat(new_entry, "=");
 	_strcat(new_entry, value);
 
-	printf("***create entry - %s\n", new_entry);
-
 	return (new_entry);
 }
 
