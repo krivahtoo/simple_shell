@@ -36,15 +36,13 @@ int _puts(char *str)
  */
 void print_err(char *name, char *program, int line)
 {
-	char *err_str = ": command not found\n";
+	char *err_str = ": not found\n";
 
 	(void)line;
 	_puts(name);
-	if (isatty(fileno(stdin)))
-		_puts(": ");
-	else
+	_puts(": ");
+	if (!isatty(fileno(stdin)))
 	{
-		_puts(": line ");
 		_putchar('0' + line);
 		_puts(": ");
 	}
