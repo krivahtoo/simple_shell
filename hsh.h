@@ -17,6 +17,9 @@ ssize_t _getline(char **str, size_t *len, FILE *stream);
 int execute(char **args, int *status);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
+char **parse_args(char **args, int last_status);
+char *to_string(int n);
+
 char *_getenv(const char *name);
 int _setenv(
 	const char *name,

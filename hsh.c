@@ -46,6 +46,7 @@ int evaluate(
 
 	line_no++;
 	args = split(strtok(line, "\n"), " ");
+	args = parse_args(args, *status);
 	if (exec_builtin(args, &exit, env_allocated) == -1 && args != NULL)
 	{
 		i = execute(args, status);
