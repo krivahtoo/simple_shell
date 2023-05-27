@@ -13,7 +13,6 @@ char **parse_args(char **args, int last_status)
 {
 	char **p = args, *name, *value;
 
-	p++; /* ignore command name */
 	while (*p)
 	{
 		if (*p[0] == '$')
@@ -27,6 +26,9 @@ char **parse_args(char **args, int last_status)
 				case '?':
 					value = to_string(((last_status) & 0xff00) >> 8);
 					break;
+				case '\0':
+					p++;
+					continue;
 				default:
 					value = _strdup(_getenv(name));
 			}
