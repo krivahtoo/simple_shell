@@ -118,6 +118,7 @@ int _atoi(char *str)
 
 /*
  * to_string - convert integer to string
+ *
  * @n: number to convert
  *
  * Return: malloced string pointer or NULL if n < 0

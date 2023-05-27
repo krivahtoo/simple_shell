@@ -13,6 +13,9 @@ char **parse_args(char **args, int last_status)
 {
 	char **p = args, *name, *value;
 
+	if (p == NULL)
+		return (args);
+
 	while (*p)
 	{
 		if (*p[0] == '$')

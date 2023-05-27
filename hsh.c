@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 
 /**
  * handler - handle system signals
@@ -72,23 +73,36 @@ int main(int ac, char *av[])
 {
 	char *input = NULL;
 	size_t len = 0;
-	int status, line_no = 0;
-	int exit = 0, env_allocated = 0;
+	int status = 0, line_no = 0, fd = 0;
+	int if_exit = 0, env_allocated = 0;
+	FILE *stream;
 
-	(void)ac;
+	if (ac >= 2)
+	{
+		fd = open(av[1], O_RDONLY);
+		if (fd < 0)
+		{
+			perror(av[0]);
+			exit(127);
+		}
+		stream = fdopen(fd, "r");
+	}
+	else
+		stream = stdin;
 	signal(SIGINT, &handler);
 	do {
-		if (prompt(&input, &len) == EOF)
+		if (prompt(&input, &len, stream) == EOF)
 		{
-			if (isatty(fileno(stdin)))
+			if (isatty(fd))
 				_puts("\n");
-			exit = 1;
+			if_exit = 1;
 		}
 		else if (input != NULL)
-			exit = evaluate(input, av[0], &env_allocated, &line_no, &status);
+			if_exit = evaluate(input, av[0], &env_allocated, &line_no, &status);
 		free(input);
 		len = 0;
 		input = NULL;
-	} while (!exit);
-	return (exit > 1 ? exit - 1 : WEXITSTATUS(status));
+	} while (!if_exit);
+	fclose(stream);
+	return (if_exit > 1 ? if_exit - 1 : WEXITSTATUS(status));
 }

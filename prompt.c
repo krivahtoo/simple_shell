@@ -9,18 +9,19 @@
  *
  * @input: where to store the input
  * @len: where to store the input len
+ * @fd: file descriptor
  *
  * Return: 0 success, nonzero on failure.
  */
-int prompt(char **input, size_t *len)
+int prompt(char **input, size_t *len, FILE *stream)
 {
-	if (isatty(fileno(stdin)))
+	if (isatty(fileno(stream)))
 	{
 		_puts("#cisfun$ ");
 		fflush(stdout);
 	}
 
-	if (getline(input, len, stdin) == EOF)
+	if (getline(input, len, stream) == EOF)
 	{
 		return (EOF);
 		free(input);
