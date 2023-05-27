@@ -21,28 +21,28 @@ int execute(char **args, int *status)
 	if (bin == NULL)
 	{
 		free(bin);
-		return (-2);
+		return (1);
 	}
 
-		child_pid = fork();
-		if (child_pid == -1)
+	child_pid = fork();
+	if (child_pid == -1)
+	{
+		free(bin);
+		return (-1);
+	}
+	else if (child_pid == 0)
+	{
+		if (execve(bin, args, env) == -1)
+			_exit(EXIT_FAILURE);
+	}
+	else
+	{
+		if (wait(status) == -1)
 		{
 			free(bin);
 			return (-1);
 		}
-		else if (child_pid == 0)
-		{
-			if (execve(bin, args, env) == -1)
-				_exit(EXIT_FAILURE);
-		}
-		else
-		{
-			if (wait(status) == -1)
-			{
-				free(bin);
-				return (-1);
-			}
-		}
+	}
 
 	free(bin);
 	return (0);

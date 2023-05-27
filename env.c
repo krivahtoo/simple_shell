@@ -30,18 +30,19 @@ char *create_entry(const char *name, const char *value)
 }
 
 /**
- * setenv_conditions - check if the entry already exists and 
+ * set_variables - check if the entry already exists and
  * gives conditions for creation or not
  *
  * @name: name of entry
- * @overwrie: overwrite conditions
+ * @value: entry value
+ * @overwrite: overwrite conditions
  * Return: 0
  */
 
-int setenv_conditions(const char *name, const char *value, int overwrite)
+int set_variables(const char *name, const char *value, int overwrite)
 {
 	int i;
-	char *env_value, *temp, *new_entry;
+	char *env_value = NULL, *temp, *new_entry;
 
 	for (i = 0; environ[i] != NULL; i++)
 	{
@@ -50,20 +51,42 @@ int setenv_conditions(const char *name, const char *value, int overwrite)
 
 		if (_strncmp(temp, name, _strlen(name)) == 0)
 		{
-			printf("setenv_conditions - %s\n", env_value);
-			free(env_value);
 			if (overwrite != 0)
 			{
 				new_entry = create_entry(name, value);
 				if (new_entry == NULL)
 					return (-1);
 
+				free(env_value);
 				environ[i] = new_entry;
 			}
 			return (0);
 		}
+		free(env_value);
+		env_value = NULL;
 	}
 	return (1);
+}
+
+/**
+ * allocate_env - allocate environ if not allocate
+ *
+ * Return: 0 on success, -1 on error
+ */
+int allocate_env(void)
+{
+	int i = 0;
+	char **new_env = NULL;
+
+	while (*(environ + i))
+	{
+		new_env = _realloc(new_env, i + 1, i + 2);
+		*(new_env + i) = _strdup(*(environ + i));
+		i++;
+	}
+	new_env[i] = NULL;
+	environ = new_env;
+	return (0);
 }
 
 /**
@@ -71,52 +94,52 @@ int setenv_conditions(const char *name, const char *value, int overwrite)
  * @name: Name of entry
  * @value: Value associated with entry
  * @overwrite: condition for overwriting value of entry
+ * @env_allocated: if env was allocated
  * Return: 0, if successful
  */
 
-int _setenv(const char *name, const char *value, int overwrite)
+int _setenv(
+	const char *name,
+	const char *value,
+	int overwrite,
+	int *env_allocated
+)
 {
-	char *new_entry, **new_environ;
-	int num_entries = 0, len, existing_entry;
+	char **new_env, *new_entry, *existing_entry;
+	int num_entries = 0, len;
 
-	printf("***%s, %s\n***", name, value);
-
-	existing_entry = setenv_conditions(name, value, overwrite);
-	if (existing_entry == 0)
-		return (0);
-
-	if (overwrite == 0)
+	existing_entry = _getenv(name);
+	if (existing_entry != NULL && overwrite == 0)
 		return (0);
 
 	new_entry = create_entry(name, value);
-
-	printf("new_entry works? = %s\n", new_entry);
-
 	if (new_entry == NULL)
 		return (-1);
+	if (*env_allocated == 0)
+	{
+		allocate_env();
+		*env_allocated = 1;
+	}
+	if (existing_entry != NULL)
+	{
+		set_variables(name, value, overwrite);
+		return (0);
+	}
 
 	/* Find out how many entries are in environ */
 	while (environ[num_entries] != NULL)
 		num_entries++;
-
-	printf("number of entries in env - %d\n", num_entries);
-
 	len = (num_entries + 2) * sizeof(char *);
-	new_environ = _realloc(environ, num_entries, len);
-
-	printf("new_environ realloc works? - %s\n", *new_environ);
-
-	if (new_environ == NULL)
+	new_env = _realloc(environ, len - 1, len);
+	if (environ == NULL)
 	{
 		free(new_entry);
 		return (-1);
 	}
-	new_environ[num_entries + 1] = new_entry;
 
-	printf("new_environ = %s\n", new_environ[num_entries + 1]);
-
-	new_environ[num_entries + 2] = NULL;
-	environ = new_environ;
+	new_env[num_entries + 1] = new_entry;
+	new_env[num_entries + 2] = NULL;
+	environ = new_env;
 	return (0);
 }
 

@@ -12,17 +12,24 @@ char *which(const char *bin);
 void print_err(char *name, char *program, int line);
 int prompt(char **input, size_t *len);
 void free_array(char **paths);
-int exec_builtin(char **args, int *exit);
+int exec_builtin(char **args, int *exit, int *env_allocated);
 ssize_t _getline(char **str, size_t *len, FILE *stream);
 int execute(char **args, int *status);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
 char *_getenv(const char *name);
-int _setenv(const char *name, const char *value, int overwrite);
+int _setenv(
+	const char *name,
+	const char *value,
+	int overwrite,
+	int *env_allocated
+);
 int _unsetenv(const char *name);
 
 int _puts(char *str);
 int _putchar(char ch);
+
+int _atoi(char *str);
 
 int _strlen(const char *str);
 char *_strcpy(char *dest, const char *src);

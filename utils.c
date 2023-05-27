@@ -79,3 +79,39 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 	}
 	return (p);
 }
+
+/**
+ * _atoi - convert a string to an integer.
+ *
+ * @str: string to convert
+ *
+ * Return: integer from string
+ */
+int _atoi(char *str)
+{
+	int value = 0, sign = 1, i = 0;
+
+	if (str == NULL)
+		return (0);
+
+	while (str[i] != '\0')
+	{
+		if (str[i] == '-')
+			sign *= -1;
+		else if (str[i] >= '0' && str[i] <= '9')
+		{
+			if (value == 0)
+				value = str[i] - '0';
+			else
+			{
+				value *= 10;
+				value += str[i] - '0';
+			}
+		}
+		else if (value > 0)
+			break;
+		i++;
+	}
+
+	return (value * sign);
+}
