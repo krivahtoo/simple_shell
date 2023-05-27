@@ -28,7 +28,7 @@ char **split(char *str, char *delim)
 	while (1)
 	{
 		token = strtok(str, delim);
-		if (token == NULL)
+		if (token == NULL || token[0] == '#')
 			break;
 		if (i == 0)
 			len = 0;
