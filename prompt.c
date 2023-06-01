@@ -9,7 +9,7 @@
  *
  * @input: where to store the input
  * @len: where to store the input len
- * @fd: file descriptor
+ * @stream: file descriptor
  *
  * Return: 0 success, nonzero on failure.
  */

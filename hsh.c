@@ -45,7 +45,7 @@ int evaluate(
 	char *line = input;
 	int i, exit = 0;
 
-	line_no++;
+	(*line_no)++;
 	args = split(strtok(line, "\n"), " ");
 	args = parse_args(args, *status);
 	if (exec_builtin(args, &exit, env_allocated) == -1 && args != NULL)

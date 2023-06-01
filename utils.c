@@ -116,7 +116,7 @@ int _atoi(char *str)
 	return (value * sign);
 }
 
-/*
+/**
  * to_string - convert integer to string
  *
  * @n: number to convert
