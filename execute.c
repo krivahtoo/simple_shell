@@ -63,6 +63,7 @@ int exec_builtin(context_t *ctx)
 		{"env", builtin_env},
 		{"exit", builtin_exit},
 		{"setenv", builtin_setenv},
+		{"cd", builtin_cd},
 		{NULL, NULL}
 	};
 

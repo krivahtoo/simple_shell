@@ -39,9 +39,9 @@ int builtin_exit(context_t *ctx)
 		if (status < 0)
 		{
 			print_err(ctx, "Illegal number");
-			_puts(": ");
-			_puts(ctx->args[1]);
-			_putchar('\n');
+			puts_err(": ");
+			puts_err(ctx->args[1]);
+			putchar_err('\n');
 			status = 2;
 		}
 	}
@@ -55,10 +55,46 @@ int builtin_exit(context_t *ctx)
  *
  * @ctx: shell context
  *
- * Return: 0 always
+ * Return: 0 on success, -1 on error
  */
 int builtin_setenv(context_t *ctx)
 {
-	_setenv(ctx->args[1], ctx->args[2], 1, ctx);
+	char *name = ctx->args[1];
+	char *value = ctx->args[2];
+
+	if (name != NULL && value != NULL)
+		return (_setenv(name, value, 1, ctx));
+	return (-1);
+}
+
+/**
+ * builtin_cd - command to change directory
+ *
+ * @ctx: shell context
+ *
+ * Return: 0 on success, -1 on error
+ */
+int builtin_cd(context_t *ctx)
+{
+	char *tmp = NULL, *path = NULL;
+
+	if (ctx->args[1] == NULL)
+		path = _strdup(_getenv("HOME", ctx));
+	else if (*(ctx->args[1]) == '-')
+		path = _strdup(_getenv("OLD_PWD", ctx));
+	else
+		path = _strdup(ctx->args[1]);
+	tmp = getcwd(tmp, 100);
+	if (chdir(path) == -1)
+	{
+		free(path);
+		free(tmp);
+		return (-1);
+	}
+	_setenv("OLD_PWD", tmp, 1, ctx);
+	_setenv("PWD", path, 1, ctx);
+
+	free(tmp);
+	free(path);
 	return (0);
 }

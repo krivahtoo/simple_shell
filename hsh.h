@@ -58,6 +58,7 @@ typedef struct builtin
 int builtin_env(context_t *ctx);
 int builtin_exit(context_t *ctx);
 int builtin_setenv(context_t *ctx);
+int builtin_cd(context_t *ctx);
 
 char **split(char *str, char *delim);
 char *which(const char *bin, context_t *ctx);
@@ -88,6 +89,8 @@ int _unsetenv(const char *name, context_t *ctx);
 
 int _puts(char *str);
 int _putchar(char ch);
+int puts_err(char *str);
+int putchar_err(char ch);
 
 int _atoi(char *str);
 

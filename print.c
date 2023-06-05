@@ -16,6 +16,18 @@ int _putchar(char ch)
 }
 
 /**
+ * putchar_err - print character to stderr
+ *
+ * @ch: character to print
+ *
+ * Return: 1 on success.
+ */
+int putchar_err(char ch)
+{
+	return (write(STDERR_FILENO, &ch, 1));
+}
+
+/**
  * _puts - prints a string.
  *
  * @str: string to print
@@ -28,6 +40,19 @@ int _puts(char *str)
 }
 
 /**
+ * puts_err - prints a string to stderr.
+ *
+ * @str: string to print
+ *
+ * Return: 1 on success.
+ */
+int puts_err(char *str)
+{
+	return (write(STDERR_FILENO, str, _strlen(str)));
+}
+
+
+/**
  * print_err - print "command not found" error
  *
  * @ctx: shell context
@@ -35,16 +60,16 @@ int _puts(char *str)
  */
 void print_err(context_t *ctx, char *err)
 {
-	_puts(ctx->name);
-	_puts(": ");
+	puts_err(ctx->name);
+	puts_err(": ");
 	if (!ctx->isatty)
 	{
-		_putchar('0' + ctx->line);
-		_puts(": ");
+		putchar_err('0' + ctx->line);
+		puts_err(": ");
 	}
-	_puts(ctx->args[0]);
-	_puts(": ");
-	_puts(err);
+	puts_err(ctx->args[0]);
+	puts_err(": ");
+	puts_err(err);
 	fflush(stderr);
 	ctx->status = 127;
 }
