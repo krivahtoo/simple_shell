@@ -76,8 +76,7 @@ int exec_builtin(context_t *ctx)
 		return (-1);
 
 	for (; bltns[i].name != NULL; i++)
-		/* we should probably use _strcmp */
-		if (_strncmp(*ctx->args, bltns[i].name, _strlen(bltns[i].name)) == 0)
+		if (_strcmp(bltns[i].name, *ctx->args) == 0)
 			return (bltns[i].f(ctx));
 	return (-1);
 }

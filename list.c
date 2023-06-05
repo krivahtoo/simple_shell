@@ -21,9 +21,9 @@ char **to_array(node_t *h)
 		arr[i] = malloc(
 			sizeof(char) * (_strlen(node->key) + _strlen(node->value) + 2)
 		);
-		_strcpy(arr[i], node->key);
-		_strcat(arr[i], "=");
-		_strcat(arr[i], node->value);
+		arr[i] = _strcpy(arr[i], node->key);
+		arr[i] = _strcat(arr[i], "=");
+		arr[i] = _strcat(arr[i], node->value);
 		node = node->next;
 		i++;
 	}
@@ -69,7 +69,7 @@ node_t *get_node(node_t *head, const char *key)
 {
 	node_t *node = head;
 
-	while (node != NULL && _strncmp(node->key, key, _strlen(key)) != 0)
+	while (node != NULL && _strcmp(key, node->key) != 0)
 	{
 		node = node->next;
 	}
@@ -90,7 +90,7 @@ size_t pop_node(node_t **head, const char *key)
 	node_t *tmp, *old = NULL;
 
 	tmp = *head;
-	while (tmp != NULL && _strncmp(tmp->key, key, _strlen(key)) != 0)
+	while (tmp != NULL && _strcmp(key, tmp->key) != 0)
 	{
 		old = tmp;
 		tmp = tmp->next;
@@ -133,11 +133,11 @@ node_t *add_node_end(node_t **head, const char *key, const char *value)
 		return (new);
 	}
 	tmp = *head;
-	while (tmp->next != NULL && _strncmp(tmp->key, key, _strlen(key)) != 0)
+	while (tmp->next != NULL && _strcmp(key, tmp->key) != 0)
 	{
 		tmp = tmp->next;
 	}
-	if (_strncmp(tmp->key, key, _strlen(key)) == 0)
+	if (_strcmp(key, tmp->key) == 0)
 	{
 		free_list(&new);
 		free(tmp->value);

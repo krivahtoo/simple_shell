@@ -17,10 +17,12 @@ void parse_args(context_t *ctx)
 		return;
 
 	node = get_node(ctx->aliases, *p);
-	if (node != NULL)
+	/* get alias recursively this could be an alias of alias */
+	while (node != NULL)
 	{
 		free(*p);
-		*p = node->value;
+		*p = _strdup(node->value);
+		node = get_node(ctx->aliases, *p);
 	}
 	while (*p)
 	{
