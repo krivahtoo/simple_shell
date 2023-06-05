@@ -21,12 +21,27 @@ typedef struct buf
 } buf_t;
 
 /**
+ * struct node - linked list node
+ *
+ * @key: key of the node
+ * @value: node value
+ * @next: next node
+ */
+typedef struct node
+{
+	char *key;
+	char *value;
+	struct node *next;
+} node_t;
+
+/**
  * struct context - context data for our shell
  *
  * @name: name of program according to argv[0]
  * @line: current line number of piped content or file
  * @args: parsed arguments
- * @env: our shell environment variables
+ * @env: head of the env variables linked list
+ * @aliases: head of the alias linkeed list
  * @buf: buffer to store input
  * @status: exit status of the child process
  * @isatty: if current file descriptor is a tty
@@ -36,7 +51,8 @@ typedef struct context
 	char *name;
 	size_t line;
 	char **args;
-	char **env;
+	node_t *env;
+	node_t *aliases;
 	buf_t buf;
 	int status;
 	u_int8_t isatty;
@@ -58,7 +74,9 @@ typedef struct builtin
 int builtin_env(context_t *ctx);
 int builtin_exit(context_t *ctx);
 int builtin_setenv(context_t *ctx);
+int builtin_unsetenv(context_t *ctx);
 int builtin_cd(context_t *ctx);
+int builtin_alias(context_t *ctx);
 
 char **split(char *str, char *delim);
 char *which(const char *bin, context_t *ctx);
@@ -86,6 +104,14 @@ int _setenv(
 	context_t *ctx
 );
 int _unsetenv(const char *name, context_t *ctx);
+
+/* linked list */
+void free_list(node_t **head);
+size_t print_list(const node_t *h);
+char **to_array(node_t *h);
+node_t *get_node(node_t *head, const char *key);
+size_t pop_node(node_t **head, const char *key);
+node_t *add_node_end(node_t **head, const char *key, const char *value);
 
 int _puts(char *str);
 int _putchar(char ch);

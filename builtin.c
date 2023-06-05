@@ -11,14 +11,7 @@
  */
 int builtin_env(context_t *ctx)
 {
-	char **env = ctx->env;
-
-	while (*env)
-	{
-		_puts(*env);
-		_putchar('\n');
-		env++;
-	}
+	print_list(ctx->env);
 	return (0);
 }
 
@@ -68,6 +61,22 @@ int builtin_setenv(context_t *ctx)
 }
 
 /**
+ * builtin_unsetenv - change env variable
+ *
+ * @ctx: shell context
+ *
+ * Return: 0 on success, -1 on error
+ */
+int builtin_unsetenv(context_t *ctx)
+{
+	char *name = ctx->args[1];
+
+	if (name != NULL)
+		return (_unsetenv(name, ctx));
+	return (-1);
+}
+
+/**
  * builtin_cd - command to change directory
  *
  * @ctx: shell context
@@ -81,7 +90,7 @@ int builtin_cd(context_t *ctx)
 	if (ctx->args[1] == NULL)
 		path = _strdup(_getenv("HOME", ctx));
 	else if (*(ctx->args[1]) == '-')
-		path = _strdup(_getenv("OLD_PWD", ctx));
+		path = _strdup(_getenv("OLDPWD", ctx));
 	else
 		path = _strdup(ctx->args[1]);
 	tmp = getcwd(tmp, 100);
@@ -91,7 +100,7 @@ int builtin_cd(context_t *ctx)
 		free(tmp);
 		return (-1);
 	}
-	_setenv("OLD_PWD", tmp, 1, ctx);
+	_setenv("OLDPWD", tmp, 1, ctx);
 	_setenv("PWD", path, 1, ctx);
 
 	free(tmp);

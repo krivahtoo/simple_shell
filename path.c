@@ -48,6 +48,8 @@ char *which(const char *bin, context_t *ctx)
 	}
 
 	paths = extract_path(ctx);
+	if (paths == NULL)
+		return (NULL);
 	p = paths; /* for free */
 
 	/* Loop through dir paths in PATH */

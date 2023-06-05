@@ -2,6 +2,29 @@
 #include <stdlib.h>
 
 /**
+ * free_list - frees a node_t list.
+ *
+ * @head: pointer to head node in the list to free
+ */
+void free_list(node_t **head)
+{
+	node_t *tmp;
+
+	if (head != NULL)
+	{
+		while (*head != NULL)
+		{
+			tmp = *head;
+			*head = (*head)->next;
+			free(tmp->key);
+			free(tmp->value);
+			free(tmp);
+		}
+		*head = NULL;
+	}
+}
+
+/**
  * free_array - free a malloced array
  *
  * @arr: NULL terminated array
@@ -38,6 +61,7 @@ void free_buf(buf_t *buf)
 void free_ctx(context_t *ctx)
 {
 	free_buf(&ctx->buf);
-	free_array(ctx->env);
+	free_list(&ctx->env);
+	free_list(&ctx->aliases);
 	free_array(ctx->args);
 }

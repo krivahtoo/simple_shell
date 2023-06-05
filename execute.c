@@ -16,6 +16,7 @@ int execute(context_t *ctx)
 	char *bin;
 	pid_t child_pid;
 	int status = 0;
+	char **env = to_array(ctx->env);
 
 	bin = which(*ctx->args, ctx);
 	if (bin == NULL)
@@ -32,19 +33,21 @@ int execute(context_t *ctx)
 	}
 	else if (child_pid == 0)
 	{
-		if (execve(bin, ctx->args, ctx->env) == -1)
+		if (execve(bin, ctx->args, env) == -1)
 			_exit(EXIT_FAILURE);
 	}
 	else
 	{
 		if (wait(&status) == -1)
 		{
+			free_array(env);
 			free(bin);
 			return (-1);
 		}
 		ctx->status = WEXITSTATUS(status);
 	}
 
+	free_array(env);
 	free(bin);
 	return (0);
 }
@@ -63,7 +66,9 @@ int exec_builtin(context_t *ctx)
 		{"env", builtin_env},
 		{"exit", builtin_exit},
 		{"setenv", builtin_setenv},
+		{"unsetenv", builtin_unsetenv},
 		{"cd", builtin_cd},
+		{"alias", builtin_alias},
 		{NULL, NULL}
 	};
 

@@ -51,7 +51,6 @@ int puts_err(char *str)
 	return (write(STDERR_FILENO, str, _strlen(str)));
 }
 
-
 /**
  * print_err - print "command not found" error
  *
@@ -67,8 +66,11 @@ void print_err(context_t *ctx, char *err)
 		putchar_err('0' + ctx->line);
 		puts_err(": ");
 	}
-	puts_err(ctx->args[0]);
-	puts_err(": ");
+	if (ctx->args)
+	{
+		puts_err(ctx->args[0]);
+		puts_err(": ");
+	}
 	puts_err(err);
 	fflush(stderr);
 	ctx->status = 127;

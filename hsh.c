@@ -59,15 +59,18 @@ int evaluate(context_t *ctx)
 int main(int ac, char *av[])
 {
 	int if_exit = 0, fd = 0;
-	context_t ctx = { NULL, 0,  NULL, NULL, { NULL, 0 }, 0, 0};
+	context_t ctx = { NULL, 0,  NULL, NULL, NULL, { NULL, 0 }, 0, 0};
 	FILE *stream;
 
+	ctx.name = av[0];
 	if (ac >= 2)
 	{
 		fd = open(av[1], O_RDONLY);
 		if (fd < 0)
 		{
-			perror(av[0]);
+			print_err(&ctx, "Can't open ");
+			puts_err(av[1]);
+			putchar_err('\n');
 			exit(127);
 		}
 		stream = fdopen(fd, "r");
@@ -76,7 +79,6 @@ int main(int ac, char *av[])
 		stream = stdin;
 	signal(SIGINT, &handler);
 	allocate_env(&ctx);
-	ctx.name = av[0];
 	do {
 		free_buf(&ctx.buf);
 		if (prompt(&ctx, stream) == EOF)
