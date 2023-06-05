@@ -8,55 +8,32 @@
 /**
  * extract_path - extract directories from PATH variable.
  *
+ * @ctx: shell context
+ *
  * Return: NULL turminated array
  */
-char **extract_path(void)
+char **extract_path(context_t *ctx)
 {
-	char **env = environ, *tmp, *token;
+	char *path, *tmp;
 	char **paths = { NULL };
 	/* Extracts the PATH variable in environ */
-	while (*env)
-	{
-		if (_strncmp(*env, "PATH", 4) == 0)
-		{
-			tmp = _strdup(*env); /* don't modify env variable */
-			token = strtok(tmp, "=");
-			if (token == NULL)
-				break;
-			paths = split(strtok(NULL, "="), ":");
-			free(tmp);
-			break;
-		}
-		env++;
-	}
+
+	path = _strdup(_getenv("PATH", ctx));
+	tmp = path; /* free */
+	paths = split(path, ":");
+	free(tmp);
 	return (paths);
-}
-
-/**
- * free_array - free paths from PATH
- *
- * @paths: NULL terminated array of paths
- */
-void free_array(char **paths)
-{
-	int i = 0;
-
-	if (paths)
-	{
-		while (paths[i])
-			free(paths[i++]);
-		free(paths);
-	}
 }
 
 /**
  * which - returns path to a binary or NULL
  *
  * @bin: binary name
+ * @ctx: shell context
  *
  * Return: full path, NULL when not found
  */
-char *which(const char *bin)
+char *which(const char *bin, context_t *ctx)
 {
 	char *filepath;
 	char **paths, **p;
@@ -70,7 +47,7 @@ char *which(const char *bin)
 			return (NULL);
 	}
 
-	paths = extract_path();
+	paths = extract_path(ctx);
 	p = paths; /* for free */
 
 	/* Loop through dir paths in PATH */

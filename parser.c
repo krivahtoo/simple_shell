@@ -4,17 +4,16 @@
 
 /**
  * parse_args - parse arguments replace $ variables
- * @args: arguments passed to cammand
- * @last_status: last command status
+ * @ctx: shell context
  *
  * Return: updated arguments.
  */
-char **parse_args(char **args, int last_status)
+void parse_args(context_t *ctx)
 {
-	char **p = args, *name, *value;
+	char **p = ctx->args, *name, *value;
 
 	if (p == NULL)
-		return (args);
+		return;
 
 	while (*p)
 	{
@@ -27,13 +26,13 @@ char **parse_args(char **args, int last_status)
 					value = to_string(getpid());
 					break;
 				case '?':
-					value = to_string(((last_status) & 0xff00) >> 8);
+					value = to_string(ctx->status);
 					break;
 				case '\0':
 					p++;
 					continue;
 				default:
-					value = _strdup(_getenv(name));
+					value = _strdup(_getenv(name, ctx));
 			}
 			free(*p);
 			*p = _strdup(value);
@@ -41,6 +40,4 @@ char **parse_args(char **args, int last_status)
 		}
 		p++;
 	}
-
-	return (args);
 }

@@ -30,25 +30,21 @@ int _puts(char *str)
 /**
  * print_err - print "command not found" error
  *
- * @name: name of our shell ass passed in argv[0]
- * @program: program name the program that was not found
- * @line: line number if it was piped
+ * @ctx: shell context
+ * @err: error message
  */
-void print_err(char *name, char *program, int line)
+void print_err(context_t *ctx, char *err)
 {
-	char *err_str = ": not found\n";
-
-	(void)line;
-	_puts(name);
+	_puts(ctx->name);
 	_puts(": ");
-	if (!isatty(fileno(stdin)))
+	if (!ctx->isatty)
 	{
-		_putchar('0' + line);
+		_putchar('0' + ctx->line);
 		_puts(": ");
 	}
-	_puts(program);
-	_puts(err_str);
+	_puts(ctx->args[0]);
+	_puts(": ");
+	_puts(err);
 	fflush(stderr);
-	if (isatty(fileno(stdin)) == 0)
-		exit(127);
+	ctx->status = 127;
 }

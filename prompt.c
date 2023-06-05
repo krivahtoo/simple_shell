@@ -7,24 +7,24 @@
  * prompt - display prompt if not connected to tty and
  * read line from user.
  *
- * @input: where to store the input
- * @len: where to store the input len
+ * @ctx: shell context
  * @stream: file descriptor
  *
  * Return: 0 success, nonzero on failure.
  */
-int prompt(char **input, size_t *len, FILE *stream)
+int prompt(context_t *ctx, FILE *stream)
 {
-	if (isatty(fileno(stream)))
+	ctx->isatty = isatty(fileno(stream));
+	if (ctx->isatty)
 	{
 		_puts("#cisfun$ ");
 		fflush(stdout);
 	}
 
-	if (getline(input, len, stream) == EOF)
+	if (getline(&ctx->buf.ptr, &ctx->buf.len, stream) == EOF)
 	{
 		return (EOF);
-		free(input);
+		free_buf(&ctx->buf);
 	}
 	return (0);
 }

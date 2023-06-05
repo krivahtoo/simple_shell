@@ -4,30 +4,87 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
 
 extern char **environ;
 
+/**
+ * struct buf - string buffer
+ *
+ * @ptr: string pointer
+ * @len: size of buffer
+ */
+typedef struct buf
+{
+	char *ptr;
+	size_t len;
+} buf_t;
+
+/**
+ * struct context - context data for our shell
+ *
+ * @name: name of program according to argv[0]
+ * @line: current line number of piped content or file
+ * @args: parsed arguments
+ * @env: our shell environment variables
+ * @buf: buffer to store input
+ * @status: exit status of the child process
+ * @isatty: if current file descriptor is a tty
+ */
+typedef struct context
+{
+	char *name;
+	size_t line;
+	char **args;
+	char **env;
+	buf_t buf;
+	int status;
+	u_int8_t isatty;
+} context_t;
+
+/**
+ * struct builtin - builtin commands.
+ *
+ * @name: command name
+ * @f: function pointer
+ */
+typedef struct builtin
+{
+	char *name;
+	int (*f)(context_t *ctx);
+} builtin_t;
+
+/* builtins */
+int builtin_env(context_t *ctx);
+int builtin_exit(context_t *ctx);
+int builtin_setenv(context_t *ctx);
+
 char **split(char *str, char *delim);
-char *which(const char *bin);
-void print_err(char *name, char *program, int line);
-int prompt(char **input, size_t *len, FILE *stream);
-void free_array(char **paths);
-int exec_builtin(char **args, int *exit, int *env_allocated);
+char *which(const char *bin, context_t *ctx);
+void print_err(context_t *ctx, char *err);
+int prompt(context_t *ctx, FILE *stream);
+
+void free_array(char **arr);
+void free_buf(buf_t *buf);
+void free_ctx(context_t *ctx);
+
+int exec_builtin(context_t *ctx);
 ssize_t _getline(char **str, size_t *len, FILE *stream);
-int execute(char **args, int *status);
+int execute(context_t *ctx);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
-char **parse_args(char **args, int last_status);
+void parse_args(context_t *ctx);
 char *to_string(int n);
 
-char *_getenv(const char *name);
+void allocate_env(context_t *ctx);
+char *_getenv(const char *name, context_t *ctx);
 int _setenv(
 	const char *name,
 	const char *value,
 	int overwrite,
-	int *env_allocated
+	context_t *ctx
 );
-int _unsetenv(const char *name);
+int _unsetenv(const char *name, context_t *ctx);
 
 int _puts(char *str);
 int _putchar(char ch);

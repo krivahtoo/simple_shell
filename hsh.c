@@ -25,39 +25,26 @@ void handler(int no)
 /**
  * evaluate - evaluate input
  *
- * @input: intput to evaluate
- * @program: our program name
- * @env_allocated: if environ was malloced
- * @line_no: input lin number
- * @status: child process exit status
+ * @ctx: shell context
  *
  * Return: exit value
  */
-int evaluate(
-	char *input,
-	char *program,
-	int *env_allocated,
-	int *line_no,
-	int *status
-)
+int evaluate(context_t *ctx)
 {
-	char **args = NULL;
-	char *line = input;
+	char *line = ctx->buf.ptr;
 	int i, exit = 0;
 
-	(*line_no)++;
-	args = split(strtok(line, "\n"), " ");
-	args = parse_args(args, *status);
-	if (exec_builtin(args, &exit, env_allocated) == -1 && args != NULL)
+	(ctx->line)++;
+	ctx->args = split(strtok(line, "\n"), " ");
+	parse_args(ctx);
+	if (exec_builtin(ctx) == -1 && ctx->args != NULL)
 	{
-		i = execute(args, status);
+		i = execute(ctx);
 		if (i == 1)
-			print_err(program, *args, *line_no);
+			print_err(ctx, "not found\n");
 		else if (i == -1)
 			exit = 1;
 	}
-	free_array(args);
-
 	return (exit);
 }
 
@@ -71,10 +58,8 @@ int evaluate(
  */
 int main(int ac, char *av[])
 {
-	char *input = NULL;
-	size_t len = 0;
-	int status = 0, line_no = 0, fd = 0;
-	int if_exit = 0, env_allocated = 0;
+	int if_exit = 0, fd = 0;
+	context_t ctx = { NULL, 0,  NULL, NULL, { NULL, 0 }, 0, 0};
 	FILE *stream;
 
 	if (ac >= 2)
@@ -90,19 +75,22 @@ int main(int ac, char *av[])
 	else
 		stream = stdin;
 	signal(SIGINT, &handler);
+	allocate_env(&ctx);
+	ctx.name = av[0];
 	do {
-		if (prompt(&input, &len, stream) == EOF)
+		free_buf(&ctx.buf);
+		if (prompt(&ctx, stream) == EOF)
 		{
-			if (isatty(fd))
+			if (ctx.isatty)
 				_puts("\n");
 			if_exit = 1;
 		}
-		else if (input != NULL)
-			if_exit = evaluate(input, av[0], &env_allocated, &line_no, &status);
-		free(input);
-		len = 0;
-		input = NULL;
+		else if (ctx.buf.ptr != NULL)
+			if_exit = evaluate(&ctx);
+		free_array(ctx.args);
+		ctx.args = NULL;
 	} while (!if_exit);
+	free_ctx(&ctx);
 	fclose(stream);
-	return (if_exit > 1 ? if_exit - 1 : WEXITSTATUS(status));
+	return (ctx.status);
 }

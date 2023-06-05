@@ -34,57 +34,60 @@ char *create_entry(const char *name, const char *value)
  * @name: name of entry
  * @value: entry value
  * @overwrite: overwrite conditions
+ * @ctx: shell context
  * Return: 0
  */
 
-int set_variables(const char *name, const char *value, int overwrite)
+int set_variables(
+	const char *name,
+	const char *value,
+	int overwrite,
+	context_t *ctx
+)
 {
 	int i;
-	char *env_value = NULL, *temp, *new_entry;
+	char *new_entry;
 
-	for (i = 0; environ[i] != NULL; i++)
+	for (i = 0; ctx->env[i] != NULL; i++)
 	{
-		env_value = _strdup(environ[i]);
-		temp = strtok(env_value, "=");
-
-		if (_strncmp(temp, name, _strlen(name)) == 0)
+		if (_strncmp(ctx->env[i], name, _strlen(name)) == 0)
 		{
 			if (overwrite != 0)
 			{
+				free(ctx->env[i]);
 				new_entry = create_entry(name, value);
 				if (new_entry == NULL)
 					return (-1);
 
-				free(env_value);
-				environ[i] = new_entry;
+				ctx->env[i] = new_entry;
 			}
 			return (0);
 		}
-		free(env_value);
-		env_value = NULL;
 	}
 	return (1);
 }
 
 /**
- * allocate_env - allocate environ if not allocate
+ * allocate_env - allocate new r/w env
  *
- * Return: 0 on success, -1 on error
+ * @ctx: shell context
  */
-int allocate_env(void)
+void allocate_env(context_t *ctx)
 {
 	int i = 0;
-	char **new_env = NULL;
 
+	ctx->env = malloc(sizeof(char *) * 1);
 	while (*(environ + i))
 	{
-		new_env = _realloc(new_env, i + 1, i + 2);
-		*(new_env + i) = _strdup(*(environ + i));
+		ctx->env = _realloc(
+			ctx->env,
+			sizeof(char *) * (i + 1),
+			sizeof(char *) * (i + 2)
+		);
+		*(ctx->env + i) = _strdup(*(environ + i));
 		i++;
 	}
-	new_env[i] = NULL;
-	environ = new_env;
-	return (0);
+	*(ctx->env + i) = NULL;
 }
 
 /**
@@ -92,7 +95,7 @@ int allocate_env(void)
  * @name: Name of entry
  * @value: Value associated with entry
  * @overwrite: condition for overwriting value of entry
- * @env_allocated: if env was allocated
+ * @ctx: shell context
  * Return: 0, if successful
  */
 
@@ -100,44 +103,41 @@ int _setenv(
 	const char *name,
 	const char *value,
 	int overwrite,
-	int *env_allocated
+	context_t *ctx
 )
 {
-	char **new_env, *new_entry, *existing_entry;
-	int num_entries = 0, len;
+	char *new_entry, *existing_entry;
+	int len = 0;
 
-	existing_entry = _getenv(name);
-	if (existing_entry != NULL && overwrite == 0)
+	existing_entry = _getenv(name, ctx);
+	if (existing_entry != NULL)
+	{
+		if (overwrite == 0)
+			return (0);
+		set_variables(name, value, overwrite, ctx);
 		return (0);
+	}
 
 	new_entry = create_entry(name, value);
 	if (new_entry == NULL)
 		return (-1);
-	if (*env_allocated == 0)
-	{
-		allocate_env();
-		*env_allocated = 1;
-	}
-	if (existing_entry != NULL)
-	{
-		set_variables(name, value, overwrite);
-		return (0);
-	}
 
 	/* Find out how many entries are in environ */
-	while (environ[num_entries] != NULL)
-		num_entries++;
-	len = (num_entries + 2) * sizeof(char *);
-	new_env = _realloc(environ, len - 1, len);
-	if (environ == NULL)
+	while (ctx->env[len] != NULL)
+		len++;
+	ctx->env = _realloc(
+		ctx->env,
+		sizeof(char *) * (len + 1),
+		sizeof(char *) * (len + 2)
+	);
+	if (ctx->env == NULL)
 	{
 		free(new_entry);
 		return (-1);
 	}
 
-	new_env[num_entries + 1] = new_entry;
-	new_env[num_entries + 2] = NULL;
-	environ = new_env;
+	ctx->env[len] = new_entry;
+	ctx->env[len + 1] = NULL;
 	return (0);
 }
 
@@ -145,14 +145,15 @@ int _setenv(
  * _getenv - get env variable
  *
  * @name: variable name
+ * @ctx: shell context
  *
  * Return: pointer to string, or NULL
  */
-char *_getenv(const char *name)
+char *_getenv(const char *name, context_t *ctx)
 {
-	char **env = environ;
+	char **env = ctx->env;
 	char *ptr = NULL;
-	/* Extracts the PATH variable in environ */
+
 	while (*env)
 	{
 		if (_strncmp(*env, name, _strlen(name)) == 0)

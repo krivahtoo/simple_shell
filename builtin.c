@@ -3,11 +3,15 @@
 #include <unistd.h>
 
 /**
- * print_env - print enviroment variables
+ * builtin_env - print enviroment variables
+ *
+ * @ctx: shell context
+ *
+ * Return: 0 always
  */
-void print_env(void)
+int builtin_env(context_t *ctx)
 {
-	char **env = environ;
+	char **env = ctx->env;
 
 	while (*env)
 	{
@@ -15,39 +19,46 @@ void print_env(void)
 		_putchar('\n');
 		env++;
 	}
+	return (0);
 }
 
 /**
- * exec_builtin - execute a built in command
+ * builtin_exit - exit builtin command
  *
- * @args: arguments passed by the user
- * @exit: exit integer variable
- * @env_allocated: if environ has been allocated
+ * @ctx: shell context
  *
- * Return: 0 on success, -1 failure
+ * Return: 0 always
  */
-int exec_builtin(char **args, int *exit, int *env_allocated)
+int builtin_exit(context_t *ctx)
 {
-	char *cmd = NULL;
-	char *name = NULL, *value = NULL;
+	int status = ctx->status;
 
-	if (args == NULL)
-		return (-1);
+	if (ctx->args[1] != NULL)
+	{
+		status = _atoi(ctx->args[1]);
+		if (status < 0)
+		{
+			print_err(ctx, "Illegal number");
+			_puts(": ");
+			_puts(ctx->args[1]);
+			_putchar('\n');
+			status = 2;
+		}
+	}
+	free_ctx(ctx);
+	exit(status);
+	return (0);
+}
 
-	cmd = *args;
-	if (_strncmp(cmd, "exit", 4) == 0)
-	{
-		*exit = 1 + _atoi(args[1]);
-	}
-	else if (_strncmp(cmd, "env", 3) == 0)
-		print_env();
-	else if (_strncmp(cmd, "setenv", 6) == 0)
-	{
-		name = args[1];
-		value = args[2];
-		_setenv(name, value, 1, env_allocated);
-	}
-	else
-		return (-1);
+/**
+ * builtin_setenv - change env variable
+ *
+ * @ctx: shell context
+ *
+ * Return: 0 always
+ */
+int builtin_setenv(context_t *ctx)
+{
+	_setenv(ctx->args[1], ctx->args[2], 1, ctx);
 	return (0);
 }

@@ -1,4 +1,5 @@
 #include "hsh.h"
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -6,18 +7,17 @@
 /**
  * execute - execute a program with arguments
  *
- * @args: arguments args[0] is the program name
- * @status: command return status
+ * @ctx: shell context
  *
  * Return: 0 on success, 1 on command not found, -1 on failure
  */
-int execute(char **args, int *status)
+int execute(context_t *ctx)
 {
 	char *bin;
 	pid_t child_pid;
-	char **env = environ;
+	int status = 0;
 
-	bin = which(*args);
+	bin = which(*ctx->args, ctx);
 	if (bin == NULL)
 	{
 		free(bin);
@@ -32,18 +32,46 @@ int execute(char **args, int *status)
 	}
 	else if (child_pid == 0)
 	{
-		if (execve(bin, args, env) == -1)
+		if (execve(bin, ctx->args, ctx->env) == -1)
 			_exit(EXIT_FAILURE);
 	}
 	else
 	{
-		if (wait(status) == -1)
+		if (wait(&status) == -1)
 		{
 			free(bin);
 			return (-1);
 		}
+		ctx->status = WEXITSTATUS(status);
 	}
 
 	free(bin);
 	return (0);
+}
+
+/**
+ * exec_builtin - execute a built in command
+ *
+ * @ctx: shell context
+ *
+ * Return: 0 on success, -1 failure
+ */
+int exec_builtin(context_t *ctx)
+{
+	int i = 0;
+	builtin_t bltns[] = {
+		{"env", builtin_env},
+		{"exit", builtin_exit},
+		{"setenv", builtin_setenv},
+		{NULL, NULL}
+	};
+
+	if (ctx->args == NULL)
+		return (-1);
+
+	for (; bltns[i].name != NULL; i++)
+		/* we should probably use _strcmp */
+		if (_strncmp(*ctx->args, bltns[i].name, _strlen(bltns[i].name)) == 0)
+			return (bltns[i].f(ctx));
+	return (-1);
 }
