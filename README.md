@@ -22,6 +22,22 @@ $ ./hsh
 $ echo "ls" | ./hsh
 ```
 
+# Features/TODO
+- [x] Handle the `PATH`
+- [x] Implement the `exit` built-in, that exits the shell
+	* [x] Usage: `exit status`, where status is an integer used to exit the shell
+- [x] Implement the `env` built-in, that prints the current environment
+- [x] Implement the `setenv` and `unsetenv` builtin commands
+- [x] Implement the builtin command `cd`
+- [ ] Handle the commands separator `;`
+- [ ] Handle the `&&` and `||` shell logical operators
+- [x] Implement the `alias` builtin command
+- [x] Handle variables replacement
+	* [x] Handle the `$?` variable
+	* [x] Handle the `$$` variable
+- [x] Handle comments (`#`)
+- [x] Handle file as input, i.e. `./hsh file`
+
 # Contributors
 <a href="https://github.com/krivahtoo/simple_shell/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=krivahtoo/simple_shell" />
