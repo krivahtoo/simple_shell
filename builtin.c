@@ -48,7 +48,7 @@ int builtin_exit(context_t *ctx)
  *
  * @ctx: shell context
  *
- * Return: 0 on success, -1 on error
+ * Return: 0 on success, 1 on error
  */
 int builtin_setenv(context_t *ctx)
 {
@@ -57,7 +57,7 @@ int builtin_setenv(context_t *ctx)
 
 	if (name != NULL && value != NULL)
 		return (_setenv(name, value, 1, ctx));
-	return (-1);
+	return (1);
 }
 
 /**
@@ -65,7 +65,7 @@ int builtin_setenv(context_t *ctx)
  *
  * @ctx: shell context
  *
- * Return: 0 on success, -1 on error
+ * Return: 0 on success, 1 on error
  */
 int builtin_unsetenv(context_t *ctx)
 {
@@ -73,7 +73,7 @@ int builtin_unsetenv(context_t *ctx)
 
 	if (name != NULL)
 		return (_unsetenv(name, ctx));
-	return (-1);
+	return (1);
 }
 
 /**
@@ -81,7 +81,7 @@ int builtin_unsetenv(context_t *ctx)
  *
  * @ctx: shell context
  *
- * Return: 0 on success, -1 on error
+ * Return: 0 on success, 1 on error
  */
 int builtin_cd(context_t *ctx)
 {
@@ -98,7 +98,7 @@ int builtin_cd(context_t *ctx)
 	{
 		free(path);
 		free(tmp);
-		return (-1);
+		return (1);
 	}
 	_setenv("OLDPWD", tmp, 1, ctx);
 	_setenv("PWD", path, 1, ctx);

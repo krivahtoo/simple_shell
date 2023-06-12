@@ -21,6 +21,7 @@ int execute(context_t *ctx)
 	bin = which(*ctx->args, ctx);
 	if (bin == NULL)
 	{
+		free_array(env);
 		free(bin);
 		return (1);
 	}

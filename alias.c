@@ -66,7 +66,7 @@ node_t *get_alias(context_t *ctx, const char *key)
  *
  * @ctx: shell context
  *
- * Return: 0 on success, -1 on error
+ * Return: 0 on success, 1 on error
  */
 int builtin_alias(context_t *ctx)
 {
