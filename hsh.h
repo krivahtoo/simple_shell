@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+#define OP_NONE	0
+#define OP_OR	1
+#define OP_AND	2
+
 extern char **environ;
 
 /**
@@ -35,11 +39,27 @@ typedef struct node
 } node_t;
 
 /**
+ * struct command - commands to execute in a line
+ *
+ * @name: command name
+ * @args: command arguments
+ * @op: operator
+ * @next: next command
+ */
+typedef struct command
+{
+	char *name;
+	char **args;
+	char op;
+	struct command *next;
+} command_t;
+
+/**
  * struct context - context data for our shell
  *
  * @name: name of program according to argv[0]
  * @line: current line number of piped content or file
- * @args: parsed arguments
+ * @cmd: parsed list of commands
  * @env: head of the env variables linked list
  * @aliases: head of the alias linkeed list
  * @buf: buffer to store input
@@ -50,7 +70,7 @@ typedef struct context
 {
 	char *name;
 	size_t line;
-	char **args;
+	command_t *cmd;
 	node_t *env;
 	node_t *aliases;
 	buf_t buf;
@@ -92,6 +112,7 @@ ssize_t _getline(char **str, size_t *len, FILE *stream);
 int execute(context_t *ctx);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 
+void parse_commands(context_t *ctx, char *input);
 void parse_args(context_t *ctx);
 char *to_string(int n);
 
@@ -112,6 +133,11 @@ char **to_array(node_t *h);
 node_t *get_node(node_t *head, const char *key);
 size_t pop_node(node_t **head, const char *key);
 node_t *add_node_end(node_t **head, const char *key, const char *value);
+
+/* command list */
+void free_commands(command_t **head);
+void add_command(command_t **head, const char *args, char op);
+command_t *next_command(command_t **head);
 
 int _puts(char *str);
 int _putchar(char ch);

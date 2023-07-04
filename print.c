@@ -52,7 +52,7 @@ int puts_err(char *str)
 }
 
 /**
- * print_err - print "command not found" error
+ * print_err - print formatted error message
  *
  * @ctx: shell context
  * @err: error message
@@ -66,12 +66,11 @@ void print_err(context_t *ctx, char *err)
 		putchar_err('0' + ctx->line);
 		puts_err(": ");
 	}
-	if (ctx->args)
+	if (ctx->cmd)
 	{
-		puts_err(ctx->args[0]);
+		puts_err(ctx->cmd->name);
 		puts_err(": ");
 	}
 	puts_err(err);
 	fflush(stderr);
-	ctx->status = 127;
 }

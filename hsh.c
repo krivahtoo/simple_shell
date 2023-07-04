@@ -31,19 +31,31 @@ void handler(int no)
  */
 int evaluate(context_t *ctx)
 {
-	char *line = ctx->buf.ptr;
+	char op, *line = ctx->buf.ptr;
 	int i, exit = 0;
+	command_t *cmd = NULL;
 
 	(ctx->line)++;
-	ctx->args = split(strtok(line, "\n"), " ");
-	parse_args(ctx);
-	if (exec_builtin(ctx) == -1 && ctx->args != NULL)
+	parse_commands(ctx, strtok(line, "\n"));
+	while (ctx->cmd)
 	{
-		i = execute(ctx);
-		if (i == 1)
-			print_err(ctx, "not found\n");
-		else if (i == -1)
-			exit = 1;
+		parse_args(ctx);
+		if (exec_builtin(ctx) == -1 && ctx->cmd != NULL)
+		{
+			i = execute(ctx);
+			if (i == 1)
+			{
+				ctx->status = 127;
+				print_err(ctx, "not found\n");
+			}
+			else if (i == -1)
+				exit = 1;
+		}
+		cmd = next_command(&ctx->cmd);
+		op = cmd->op;
+		free_commands(&cmd);
+		if (op == OP_AND && ctx->status)
+			break;
 	}
 	return (exit);
 }
@@ -88,9 +100,7 @@ int main(int ac, char *av[])
 			if_exit = 1;
 		}
 		else if (ctx.buf.ptr != NULL)
-			if_exit = evaluate(&ctx);
-		free_array(ctx.args);
-		ctx.args = NULL;
+				if_exit = evaluate(&ctx);
 	} while (!if_exit);
 	free_ctx(&ctx);
 	fclose(stream);

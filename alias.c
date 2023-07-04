@@ -71,7 +71,7 @@ node_t *get_alias(context_t *ctx, const char *key)
 int builtin_alias(context_t *ctx)
 {
 	char *token, *tmp, *value, *p;
-	char **args = ctx->args + 1;
+	char **args = ctx->cmd->args + 1;
 
 	if (*args == NULL)
 		print_aliases(ctx);

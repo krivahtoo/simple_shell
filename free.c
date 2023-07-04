@@ -63,5 +63,5 @@ void free_ctx(context_t *ctx)
 	free_buf(&ctx->buf);
 	free_list(&ctx->env);
 	free_list(&ctx->aliases);
-	free_array(ctx->args);
+	free_commands(&ctx->cmd);
 }

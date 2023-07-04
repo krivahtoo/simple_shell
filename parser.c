@@ -1,17 +1,37 @@
 #include "hsh.h"
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 /**
- * parse_args - parse arguments replace $ variables
- * @ctx: shell context
+ * parse_commands - parse arguments to commands
  *
- * Return: updated arguments.
+ * @ctx: shell context
+ * @input: string to parse arguments
+ */
+void parse_commands(context_t *ctx, char *input)
+{
+	char **p = NULL;
+	char **cmds = split(input, ";");
+
+	p = cmds;
+	while (*cmds)
+	{
+		add_command(&ctx->cmd, *cmds, OP_NONE);
+		cmds++;
+	}
+	free_array(p);
+}
+
+/**
+ * parse_args - parse arguments replace $ variables
+ *
+ * @ctx: shell context
  */
 void parse_args(context_t *ctx)
 {
 	node_t *node;
-	char **p = ctx->args, *name, *value;
+	char **p = ctx->cmd->args, *name, *value;
 
 	if (p == NULL)
 		return;

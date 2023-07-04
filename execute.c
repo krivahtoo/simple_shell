@@ -18,7 +18,7 @@ int execute(context_t *ctx)
 	int status = 0;
 	char **env = to_array(ctx->env);
 
-	bin = which(*ctx->args, ctx);
+	bin = which(*ctx->cmd->args, ctx);
 	if (bin == NULL)
 	{
 		free_array(env);
@@ -34,7 +34,7 @@ int execute(context_t *ctx)
 	}
 	else if (child_pid == 0)
 	{
-		if (execve(bin, ctx->args, env) == -1)
+		if (execve(bin, ctx->cmd->args, env) == -1)
 			_exit(EXIT_FAILURE);
 	}
 	else
@@ -73,11 +73,11 @@ int exec_builtin(context_t *ctx)
 		{NULL, NULL}
 	};
 
-	if (ctx->args == NULL)
+	if (ctx->cmd->args == NULL)
 		return (-1);
 
 	for (; bltns[i].name != NULL; i++)
-		if (_strcmp(bltns[i].name, *ctx->args) == 0)
+		if (_strcmp(bltns[i].name, *ctx->cmd->args) == 0)
 			return (bltns[i].f(ctx));
 	return (-1);
 }
